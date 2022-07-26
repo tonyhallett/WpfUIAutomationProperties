@@ -1,0 +1,48 @@
+﻿<Window x:Class="AutomationTest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AutomationTest"
+        xmlns:wpfAutomationMultiBinding="clr-namespace:WpfUIAutomationProperties.MultiBinding;assembly=WpfUIAutomationProperties"
+        xmlns:wpfCommon="clr-namespace:WpfUIAutomationProperties;assembly=WpfUIAutomationProperties"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <StackPanel x:Name="stackPanel">
+        <TextBlock AutomationProperties.AutomationId="{Binding Source={x:Static local:Constants.XamlAttachedConvertDependencyPropertiesTextBlockId}}">
+            <TextBlock.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Source={x:Static local:ApplyWhenDebugOnly.Apply}}" Value="True">
+                            <Setter Property="wpfAutomationMultiBinding:Attacher.ItemStatusConvertDependencyProperties">
+                                <Setter.Value>
+                                    <wpfAutomationMultiBinding:ConvertDependencyPropertyList>
+                                        <wpfCommon:NoConvertDependencyProperty>
+                                            <wpfCommon:NoConvertDependencyProperty.DependencyProperty>
+                                                <x:Static Member="TextBlock.FontFamilyProperty"/>
+                                            </wpfCommon:NoConvertDependencyProperty.DependencyProperty>
+                                        </wpfCommon:NoConvertDependencyProperty>
+                                        <local:DemoForegroundConverterDependencyProperty/>
+                                    </wpfAutomationMultiBinding:ConvertDependencyPropertyList>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <TextBlock AutomationProperties.AutomationId="{Binding Source={x:Static local:Constants.XamlAttachedSerializedTypeTextBlockId}}">
+            <TextBlock.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Source={x:Static local:ApplyWhenDebugOnly.Apply}}" Value="True">
+                            <Setter Property="wpfAutomationMultiBinding:Attacher.SerializedType" Value="{x:Type local:SerializedTextBlock}">
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <Button x:Name="ChangeBtn" Click="ChangeBtn_Click" AutomationProperties.AutomationId="{Binding Source={x:Static local:Constants.ChangeButtonAutomationId}}">Change</Button>
+    </StackPanel>
+</Window>

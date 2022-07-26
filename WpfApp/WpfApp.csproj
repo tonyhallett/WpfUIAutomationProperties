@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFrameworks>net6.0-windows;net472</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>AutomationTest</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WpfUIAutomationProperties\WpfUIAutomationProperties.csproj" />
+  </ItemGroup>
+</Project>
