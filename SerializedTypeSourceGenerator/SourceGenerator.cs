@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace SerializedTypeSourceGenerator
@@ -19,6 +20,7 @@ namespace SerializedTypeSourceGenerator
 
         public void Execute(GeneratorExecutionContext context)
         {
+            //Debugger.Launch();
             WpfAutomationProperties.Initialize(context.Compilation);
             Generate(context);
         }

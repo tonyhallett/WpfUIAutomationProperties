@@ -14,7 +14,7 @@ namespace SerializedTypeSourceGenerator
             return syntaxNode.DescendantNodes().OfType<T>();
         }
 
-        public static IEnumerable<string> AliasedUsingsOf(this IEnumerable<UsingDirectiveSyntax> usings,string fullyQualifiedName)
+        public static IEnumerable<string> AliasesOf(this IEnumerable<UsingDirectiveSyntax> usings,string fullyQualifiedName)
         {
             return usings.Select(u =>
             {
@@ -28,10 +28,12 @@ namespace SerializedTypeSourceGenerator
         
         public static bool IsOfType(this AttributeSyntax attributeSyntax, List<string> aliases, string matchingNamespace, string attributeNameWithoutSuffix)
         {
+            var attributeNameWithSuffix = $"{attributeNameWithoutSuffix}Attribute";
             bool NameMatches(string simpleName)
             {
-                return simpleName == attributeNameWithoutSuffix || simpleName == $"{attributeNameWithoutSuffix}Attribute";
+                return simpleName == attributeNameWithoutSuffix || simpleName == attributeNameWithSuffix;
             }
+
             var name = attributeSyntax.Name;
             if (name is QualifiedNameSyntax qualifiedNameSyntax)
             {

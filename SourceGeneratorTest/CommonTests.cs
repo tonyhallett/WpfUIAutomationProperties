@@ -115,6 +115,121 @@ namespace TestSourceGenerator
         }
 
         [Test]
+        public Task Should_Generate_When_All_Applied_Multiple_Where_Attribute_Usage_Allows()
+        {
+            var code = @"
+using System.Windows.Controls;
+using SerializedTypeSourceGeneratorAttributes;
+using System.Windows;
+using System.Windows.Media;
+
+namespace TestSourceGenerator {
+
+    public class Attacher
+    {
+        public static int GetMyProperty(DependencyObject obj)
+        {
+            return (int)obj.GetValue(MyPropertyProperty);
+        }
+
+        public static void SetMyProperty(DependencyObject obj, int value)
+        {
+            obj.SetValue(MyPropertyProperty, value);
+        }
+
+        public static readonly DependencyProperty MyPropertyProperty =
+            DependencyProperty.RegisterAttached(""MyProperty"", typeof(int), typeof(Attacher), new PropertyMetadata(0));
+
+        public static int GetMyProperty2(DependencyObject obj)
+        {
+            return (int)obj.GetValue(MyProperty2Property);
+        }
+
+        public static void SetMyProperty2(DependencyObject obj, int value)
+        {
+            obj.SetValue(MyProperty2Property, value);
+        }
+
+        public static readonly DependencyProperty MyProperty2Property =
+            DependencyProperty.RegisterAttached(""MyProperty2"", typeof(int), typeof(Attacher), new PropertyMetadata(0));
+
+    }
+
+    public class Attacher2
+    {
+        public static int GetAProperty(DependencyObject obj)
+        {
+            return (int)obj.GetValue(APropertyProperty);
+        }
+
+        public static void SetAProperty(DependencyObject obj, int value)
+        {
+            obj.SetValue(APropertyProperty, value);
+        }
+
+        public static readonly DependencyProperty APropertyProperty =
+            DependencyProperty.RegisterAttached(""AProperty"", typeof(int), typeof(Attacher2), new PropertyMetadata(0));
+
+        public static int GetAProperty2(DependencyObject obj)
+        {
+            return (int)obj.GetValue(AProperty2Property);
+        }
+
+        public static void SetAProperty2(DependencyObject obj, int value)
+        {
+            obj.SetValue(APropertyProperty, value);
+        }
+
+        public static readonly DependencyProperty AProperty2Property =
+            DependencyProperty.RegisterAttached(""AProperty2"", typeof(int), typeof(Attacher2), new PropertyMetadata(0));
+
+    }
+    
+
+    [SerializedTypeAttribute(typeof(TextBlock), nameof(TextBlock.Text))]
+    [SerializedTypeTypedPropertyAttribute(typeof(TextBlock), typeof(string), nameof(TextBlock.FontSize))]
+    [SerializedTypeTypedPropertyAttribute(typeof(TextBlock), typeof(SolidColorBrush), nameof(TextBlock.Background))]
+    [SerializedTypeAttachedAttribute(typeof(Attacher), nameof(Attacher.MyPropertyProperty))]
+    [SerializedTypeAttachedAttribute(typeof(Attacher2), nameof(Attacher2.APropertyProperty))]
+    [SerializedTypeAttachedTypedPropertyAttribute(typeof(Attacher), typeof(string), nameof(Attacher.MyProperty2Property))]
+    [SerializedTypeAttachedTypedPropertyAttribute(typeof(Attacher2), typeof(string), nameof(Attacher2.AProperty2Property))]
+    public partial class TextBlockSerialized
+    {
+
+    }
+}
+";
+            var expectedGenerated = @"// Auto-generated code
+using System;
+using System.Windows.Media;
+using TestSourceGenerator;
+using WpfUIAutomationProperties.Serialization;
+
+namespace TestSourceGenerator
+{
+    partial class TextBlockSerialized
+    {
+        public string Text { get; set; }
+        public string FontSize { get; set; }
+        public SolidColorBrush Background { get; set; }
+        [AttachedProperty(typeof(Attacher), ""MyPropertyProperty"")]
+        public int MyProperty { get; set; }
+        [AttachedProperty(typeof(Attacher2), ""APropertyProperty"")]
+        public int AProperty { get; set; }
+        [AttachedProperty(typeof(Attacher), ""MyProperty2Property"")]
+        public string MyProperty2 { get; set; }
+        [AttachedProperty(typeof(Attacher2), ""AProperty2Property"")]
+        public string AProperty2 { get; set; }
+    }
+}
+";
+            return TestGeneratesWithReferences(
+                code,
+                expectedGenerated
+            );
+        }
+
+        [Test]
         public Task Should_Not_Generate_When_Attribute_Has_Error_Diagnostics()
         {
             var code = @"
