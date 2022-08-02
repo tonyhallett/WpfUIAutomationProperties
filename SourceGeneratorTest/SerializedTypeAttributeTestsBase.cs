@@ -88,10 +88,11 @@ namespace SourceGeneratorTest
         protected Task SinglePropertyTest(
             List<string> usings,
             List<string> generatedUsingNamespaces,
-            string attributeName, 
+            string attributeName,
             PropertyDetails propertyDetails,
             IEnumerable<string> additionalCode,
-            bool withNamespace = true
+            bool withNamespace = true,
+            bool partialClass = true
             )
         {
             return PropertiesTest(
@@ -101,7 +102,8 @@ namespace SourceGeneratorTest
                 propertyDetails.PropertyArgument,
                 new List<PropertyDetails> { propertyDetails },
                 additionalCode,
-                withNamespace
+                withNamespace,
+                partialClass
                 );
         }
 
@@ -112,16 +114,18 @@ namespace SourceGeneratorTest
             string propertyArguments,
             List<PropertyDetails> properties,
             IEnumerable<string> additionalCode,
-            bool withNamespace = true
+            bool withNamespace = true,
+            bool partialClass = true
             )
         {
             var additionalTypeArgument = AdditionalTypeArgument == null ? "" : $"typeof({AdditionalTypeArgument}),";
+            var classOrStruct = partialClass ? "class" : "struct";
             var code = withNamespace ? @$"
 {GetUsings(usings, true)}
 namespace TestSourceGenerator {{
 
     [{attributeName}(typeof({TypeArgument}),{additionalTypeArgument} {propertyArguments})]
-    partial class TextBlockSerialized
+    partial {classOrStruct} TextBlockSerialized
     {{
 
     }}
@@ -130,7 +134,7 @@ namespace TestSourceGenerator {{
 @$"
 {GetUsings(usings, true)}
     [{attributeName}(typeof({TypeArgument}),{additionalTypeArgument} {propertyArguments})]
-    partial class TextBlockSerialized
+    partial {classOrStruct} TextBlockSerialized
     {{
 
     }}
@@ -157,7 +161,7 @@ namespace TestSourceGenerator {{
 
 namespace TestSourceGenerator
 {{
-    partial class TextBlockSerialized
+    partial {classOrStruct} TextBlockSerialized
     {{
 {generatedPropertiesBuilder}
     }}
@@ -166,7 +170,7 @@ namespace TestSourceGenerator
 @$"// Auto-generated code
 {GetUsings(generatedUsingNamespaces, false)}
 
-partial class TextBlockSerialized
+partial {classOrStruct} TextBlockSerialized
 {{
 {generatedPropertiesBuilder}
 }}
@@ -230,6 +234,38 @@ global using SerializedTypeSourceGeneratorAttributes;
         }
 
         [Test]
+        public Task Should_Work_With_Global_Class_Alias()
+        {
+            var globalUsing = @$"
+global using Alias = SerializedTypeSourceGeneratorAttributes.{AttributeNameWithoutAttributeSuffix}Attribute;
+";
+
+            return SinglePropertyTest(
+                SinglePropertyTestDetails.Usings,
+                SinglePropertyTestDetails.GeneratedUsingNamespaces,
+                "Alias",
+                SinglePropertyTestDetails.Properties[0],
+                GetAdditionalCode(SinglePropertyTestDetails.AdditionalCode, globalUsing)
+                );
+        }
+
+        [Test]
+        public Task Should_Work_With_Global_Namespace_Alias()
+        {
+            var globalUsing = @$"
+global using Alias = SerializedTypeSourceGeneratorAttributes;
+";
+
+            return SinglePropertyTest(
+                SinglePropertyTestDetails.Usings,
+                SinglePropertyTestDetails.GeneratedUsingNamespaces,
+                $"Alias.{AttributeNameWithoutAttributeSuffix}",
+                SinglePropertyTestDetails.Properties[0],
+                GetAdditionalCode(SinglePropertyTestDetails.AdditionalCode, globalUsing)
+                );
+        }
+
+        [Test]
         public Task Should_Generate_Without_Attribute_Suffix_Async()
         {
             var fullyQualifiedAttributeName = $"{SerializedTypeSourceGeneratorAttributesNamespace}.{AttributeNameWithoutAttributeSuffix}";
@@ -243,7 +279,7 @@ global using SerializedTypeSourceGeneratorAttributes;
         }
 
         [Test]
-        public Task Should_Generate_When_Aliased_Async()
+        public Task Should_Generate_When_Class_Aliased_Async()
         {
             var aliased = "Aliased";
             var aliasedUsing = $"using {aliased} = {SerializedTypeSourceGeneratorAttributesNamespace}.{AttributeNameWithoutAttributeSuffix}Attribute;";
@@ -252,6 +288,21 @@ global using SerializedTypeSourceGeneratorAttributes;
                 SinglePropertyTestDetails.Usings,
                 SinglePropertyTestDetails.GeneratedUsingNamespaces,
                 aliased,
+                SinglePropertyTestDetails.Properties[0],
+                GetAdditionalCode(SinglePropertyTestDetails.AdditionalCode)
+                );
+        }
+
+        [Test]
+        public Task Should_Generate_When_Namespace_Aliased_Async()
+        {
+            var aliasedNamespace = "AliasedNamespace";
+            var aliasedUsing = $"using {aliasedNamespace} = {SerializedTypeSourceGeneratorAttributesNamespace};";
+            SinglePropertyTestDetails.Usings.Add(aliasedUsing);
+            return SinglePropertyTest(
+                SinglePropertyTestDetails.Usings,
+                SinglePropertyTestDetails.GeneratedUsingNamespaces,
+                $"{aliasedNamespace}.{AttributeNameWithoutAttributeSuffix}",
                 SinglePropertyTestDetails.Properties[0],
                 GetAdditionalCode(SinglePropertyTestDetails.AdditionalCode)
                 );
@@ -346,6 +397,21 @@ namespace TestSourceGenerator {{
                 fullyQualifiedAttributeName,
                 SinglePropertyTestDetails.Properties[0],
                 GetAdditionalCode(SinglePropertyTestDetails.AdditionalCode),
+                false
+                );
+        }
+
+        [Test]
+        public Task Should_Generate_Partial_Struct_When_Attribute_Applied_To_Struct()
+        {
+            var fullyQualifiedAttributeName = $"{SerializedTypeSourceGeneratorAttributesNamespace}.{AttributeNameWithoutAttributeSuffix}Attribute";
+            return SinglePropertyTest(
+                SinglePropertyTestDetails.Usings,
+                SinglePropertyTestDetails.GeneratedUsingNamespaces,
+                fullyQualifiedAttributeName,
+                SinglePropertyTestDetails.Properties[0],
+                GetAdditionalCode(SinglePropertyTestDetails.AdditionalCode),
+                true,
                 false
                 );
         }

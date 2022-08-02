@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SerializedTypeSourceGenerator
 {
@@ -6,5 +7,6 @@ namespace SerializedTypeSourceGenerator
     {
         public AttributeSyntax AttributeSyntax { get; set; }
         public ISerializedTypeAttributeGenerator Generator { get; set; }
+        public SyntaxNode ClassOrStruct { get; internal set; }
     }
 }

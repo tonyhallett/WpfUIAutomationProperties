@@ -34,7 +34,10 @@ namespace SerializedTypeSourceGenerator
 
         public override void VisitStructDeclaration(StructDeclarationSyntax node)
         {
-            
+            foreach (var attributeList in node.AttributeLists)
+            {
+                VisitAttributeList(attributeList);
+            }
         }
         #endregion
 
@@ -55,22 +58,74 @@ namespace SerializedTypeSourceGenerator
            
         }
 
+        private List<(string alias, bool typeAlias)> GetApplicableAliases(string fullyQualifiedName, string @namespace)
+        {
+            List<(string alias, bool typeAlias)> attributeAliases = new List<(string alias, bool typeAlias)>();
+            foreach (var aliasedUsing in aliasedUsings)
+            {
+                var alias = aliasedUsing.Alias.Name.ToString();
+                if(aliasedUsing.Name.ToString() == fullyQualifiedName)
+                {
+                    attributeAliases.Add((alias, true));
+                }else if(aliasedUsing.Name.ToString() == @namespace)
+                {
+                    attributeAliases.Add((alias, false));
+                }
+            }
+            return attributeAliases;
+        }
+
+        public static bool AttributeIsSerializedTypeAttribute(
+            AttributeSyntax attributeSyntax, 
+            List<(string alias, bool typeAlias)> aliases, 
+            string matchingNamespace, 
+            string attributeNameWithoutSuffix
+        )
+        {
+            var attributeNameWithSuffix = $"{attributeNameWithoutSuffix}Attribute";
+            bool NameMatches(string simpleName)
+            {
+                return simpleName == attributeNameWithoutSuffix || simpleName == attributeNameWithSuffix;
+            }
+
+            var name = attributeSyntax.Name;
+            if (name is QualifiedNameSyntax qualifiedNameSyntax)
+            {
+                var @namespace = qualifiedNameSyntax.Left.ToString();
+                if (NameMatches(qualifiedNameSyntax.Right.ToString())){
+                    return @namespace == matchingNamespace || aliases.Any(al => !al.typeAlias && al.alias == @namespace);
+                }
+                return false;
+            }
+
+            var identifierName = (name as IdentifierNameSyntax).ToString();
+            return NameMatches(identifierName) || aliases.Any(al => al.typeAlias && al.alias == identifierName);
+        }
+
         public override void VisitAttribute(AttributeSyntax node)
         {
-            var classDeclarationSyntax = node.Parent?.Parent as ClassDeclarationSyntax;
-            if (classDeclarationSyntax != null)
+            var classOrStructDeclarationSyntax = node.Parent?.Parent;
+            if (classOrStructDeclarationSyntax != null)
             {
                 var attributeGenerator = SerializedTypesAttributeGenerators.Generators.FirstOrDefault(generator =>
                 {
-                    return node.IsOfType(
-                            aliasedUsings.AliasesOf(generator.FullyQualifiedName).ToList(),
+                    var attributeAliases = GetApplicableAliases(generator.FullyQualifiedName, generator.Namespace);
+                    return AttributeIsSerializedTypeAttribute(
+                            node,
+                            attributeAliases,
                             generator.Namespace,
                             generator.TypeNameWithoutAttribute
                         );
                 });
+
                 if (attributeGenerator != null)
                 {
-                    serializedTypeAttributeSyntaxWithGenerators.Add(new SerializedTypeAttributeSyntaxWithGenerator { Generator = attributeGenerator, AttributeSyntax = node });
+                    serializedTypeAttributeSyntaxWithGenerators.Add(
+                        new SerializedTypeAttributeSyntaxWithGenerator { 
+                            Generator = attributeGenerator, 
+                            AttributeSyntax = node,
+                            ClassOrStruct = classOrStructDeclarationSyntax
+                        });
                 }
                 
             }

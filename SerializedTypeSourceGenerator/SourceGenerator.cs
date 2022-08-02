@@ -161,8 +161,8 @@ namespace SerializedTypeSourceGenerator
 
         private IEnumerable<SerializedType> GetSerializedTypes(SyntaxTree syntaxTree, Func<SemanticModel> semanticModelProvider)
         {
-            var classesWithAttribute = SerializedTypeSyntax.GetClassesWithSerializedTypeAttribute(syntaxTree);
-            return SerializedType.From(classesWithAttribute,semanticModelProvider);
+            var typesWithAttribute = SerializedTypeSyntax.GetTypesWithSerializedTypeAttribute(syntaxTree);
+            return SerializedType.From(typesWithAttribute,semanticModelProvider);
         }
 
         public void Initialize(GeneratorInitializationContext context)

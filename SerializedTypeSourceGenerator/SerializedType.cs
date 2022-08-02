@@ -9,19 +9,19 @@ namespace SerializedTypeSourceGenerator
 {
     internal class SerializedType
     {
-        internal static IEnumerable<SerializedType> From(IEnumerable<SerializedTypeClassDeclarationSyntaxWithGenerators> classesWithAttribute, Func<SemanticModel> semanticModelProvider)
+        internal static IEnumerable<SerializedType> From(IEnumerable<SerializedTypeDeclarationSyntaxWithGenerators> classesWithAttribute, Func<SemanticModel> semanticModelProvider)
         {
             return classesWithAttribute.Select(classWithAttribute =>
             {
                 var serializedTypes = classWithAttribute.AttributeGenerators;
                 var semanticModel = semanticModelProvider();
                 
-                var classSymbol = semanticModel.GetDeclaredSymbol(classWithAttribute.ClassDeclarationSyntax);
+                var classOrStructSymbol = semanticModel.GetDeclaredSymbol(classWithAttribute.ClassOrStruct);
                 var serializedProperties = new List<ISerializedProperty>();
                 var allAttributeErrorDiagnostics = new List<Diagnostic>();
                 var customDiagnostics = new List<Diagnostic>();
                 var isSerializedType = false;
-                foreach(var attributeData in classSymbol.GetAttributes())
+                foreach(var attributeData in classOrStructSymbol.GetAttributes())
                 {
                     var correspondingSyntax = attributeData.ApplicationSyntaxReference.GetSyntax();
                     var correspondingAttributeWithGenerator = classWithAttribute.AttributeGenerators.FirstOrDefault(serializedTypeAttribute => serializedTypeAttribute.AttributeSyntax == correspondingSyntax);
@@ -48,7 +48,7 @@ namespace SerializedTypeSourceGenerator
 
                 if (isSerializedType)
                 {
-                    return new SerializedType(allAttributeErrorDiagnostics, customDiagnostics, serializedProperties, classSymbol);
+                    return new SerializedType(allAttributeErrorDiagnostics, customDiagnostics, serializedProperties, classOrStructSymbol as INamedTypeSymbol);
                 }
                 return null;
             }).Where(stc => stc != null);

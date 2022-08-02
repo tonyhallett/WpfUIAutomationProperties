@@ -6,10 +6,14 @@ namespace SerializedTypeSourceGenerator
 {
     internal static class SerializedTypeSyntax
     {
-        public static IEnumerable<SerializedTypeClassDeclarationSyntaxWithGenerators> GetClassesWithSerializedTypeAttribute(SyntaxTree syntaxTree)
+        public static IEnumerable<SerializedTypeDeclarationSyntaxWithGenerators> GetTypesWithSerializedTypeAttribute(SyntaxTree syntaxTree)
         {
-            return new SerializedTypeSyntaxWalker().Visit(syntaxTree).GroupBy(serializedTypeAttribute => serializedTypeAttribute.AttributeSyntax.Class())
-                .Select(g => new SerializedTypeClassDeclarationSyntaxWithGenerators { ClassDeclarationSyntax = g.Key, AttributeGenerators = g.ToList() });
+            return new SerializedTypeSyntaxWalker().Visit(syntaxTree)
+                .GroupBy(serializedTypeAttribute => serializedTypeAttribute.ClassOrStruct)
+                .Select(g => new SerializedTypeDeclarationSyntaxWithGenerators { 
+                    ClassOrStruct = g.Key, 
+                    AttributeGenerators = g.ToList() 
+                });
         }
     }
 }
