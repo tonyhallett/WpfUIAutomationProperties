@@ -28,17 +28,14 @@ namespace SerializedTypeSourceGenerator
         private void Generate(GeneratorExecutionContext context)
         {
             propertiesNotFoundBehaviour = PropertiesNotFoundBehaviourProvider.Provide(context);
-            foreach (var syntaxTree in context.Compilation.SyntaxTrees)
-            {
-                GenerateFromSyntaxTree(context, syntaxTree);
-            }
+            GenerateFromSyntaxTrees(context, context.Compilation.SyntaxTrees);
         }
 
-        private void GenerateFromSyntaxTree(GeneratorExecutionContext context, SyntaxTree syntaxTree)
+        private void GenerateFromSyntaxTrees(GeneratorExecutionContext context, IEnumerable<SyntaxTree> syntaxTrees)
         {
             var serializedTypes = GetSerializedTypes(
-                    syntaxTree,
-                    () => context.Compilation.GetSemanticModel(syntaxTree)
+                    syntaxTrees,
+                    (st) => context.Compilation.GetSemanticModel(st)
                 );
 
             foreach (var serializedType in serializedTypes)
@@ -159,10 +156,10 @@ namespace SerializedTypeSourceGenerator
             context.ReportDiagnostic(diagnostic);
         }
 
-        private IEnumerable<SerializedType> GetSerializedTypes(SyntaxTree syntaxTree, Func<SemanticModel> semanticModelProvider)
+        private IEnumerable<SerializedType> GetSerializedTypes(IEnumerable<SyntaxTree> syntaxTrees, Func<SyntaxTree, SemanticModel> semanticModelProvider)
         {
-            var typesWithAttribute = SerializedTypeSyntax.GetTypesWithSerializedTypeAttribute(syntaxTree);
-            return SerializedType.From(typesWithAttribute,semanticModelProvider);
+            var typesWithAttribute = SerializedTypeSyntax.GetTypesWithSerializedTypeAttribute(syntaxTrees);
+            return SerializedType.From(typesWithAttribute, semanticModelProvider);
         }
 
         public void Initialize(GeneratorInitializationContext context)

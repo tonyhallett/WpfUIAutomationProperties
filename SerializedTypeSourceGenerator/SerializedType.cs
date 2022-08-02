@@ -9,12 +9,14 @@ namespace SerializedTypeSourceGenerator
 {
     internal class SerializedType
     {
-        internal static IEnumerable<SerializedType> From(IEnumerable<SerializedTypeDeclarationSyntaxWithGenerators> classesWithAttribute, Func<SemanticModel> semanticModelProvider)
+        internal static IEnumerable<SerializedType> From(
+            IEnumerable<SerializedTypeDeclarationSyntaxWithGenerators> classesWithAttribute,
+            Func<SyntaxTree, SemanticModel> semanticModelProvider)
         {
             return classesWithAttribute.Select(classWithAttribute =>
             {
                 var serializedTypes = classWithAttribute.AttributeGenerators;
-                var semanticModel = semanticModelProvider();
+                var semanticModel = semanticModelProvider(classWithAttribute.SyntaxTree);
                 
                 var classOrStructSymbol = semanticModel.GetDeclaredSymbol(classWithAttribute.ClassOrStruct);
                 var serializedProperties = new List<ISerializedProperty>();

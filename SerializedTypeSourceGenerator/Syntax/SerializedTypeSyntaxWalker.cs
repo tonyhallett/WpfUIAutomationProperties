@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,7 +10,13 @@ namespace SerializedTypeSourceGenerator
     internal class SerializedTypeSyntaxWalker : CSharpSyntaxWalker
     {
         private List<UsingDirectiveSyntax> aliasedUsings = new List<UsingDirectiveSyntax>();
-        private List<SerializedTypeAttributeSyntaxWithGenerator> serializedTypeAttributeSyntaxWithGenerators = new List<SerializedTypeAttributeSyntaxWithGenerator>();
+        public List<UsingDirectiveSyntax> GlobalAliases { get; internal set; } = new List<UsingDirectiveSyntax>();
+
+        public SerializedTypeSyntaxWalker(SyntaxTree syntaxTree)
+        {
+            this.syntaxTree = syntaxTree;
+            this.Visit(syntaxTree.GetRoot());
+        }
 
         #region reducing the walking
         /* 
@@ -41,9 +48,45 @@ namespace SerializedTypeSourceGenerator
         }
         #endregion
 
-        public List<SerializedTypeAttributeSyntaxWithGenerator> Visit(SyntaxTree syntaxTree)
+
+        private void SetAliases(List<UsingDirectiveSyntax> globalAliases)
         {
-            this.Visit(syntaxTree.GetRoot());
+            aliasedUsings.AddRange(globalAliases);
+            generatorAliases = SerializedTypesAttributeGenerators.Generators.ToDictionary(
+                generator => generator,
+                generator => GetApplicableAliases(generator.FullyQualifiedName, generator.Namespace));
+        }
+
+        public List<SerializedTypeAttributeSyntaxWithGenerator> GetAttributeGenerators(List<UsingDirectiveSyntax> globalAliases)
+        {
+            SetAliases(globalAliases);
+
+            var serializedTypeAttributeSyntaxWithGenerators = new List<SerializedTypeAttributeSyntaxWithGenerator>();
+            foreach(var classOrStructAttribute in classOrStructAttributes)
+            {
+                var attributeGenerator = SerializedTypesAttributeGenerators.Generators.FirstOrDefault(generator =>
+                {
+                    var attributeAliases = generatorAliases[generator];
+                    return AttributeIsSerializedTypeAttribute(
+                            classOrStructAttribute,
+                            attributeAliases,
+                            generator.Namespace,
+                            generator.TypeNameWithoutAttribute
+                        );
+                });
+
+                if (attributeGenerator != null)
+                {
+                    serializedTypeAttributeSyntaxWithGenerators.Add(
+                        new SerializedTypeAttributeSyntaxWithGenerator
+                        {
+                            Generator = attributeGenerator,
+                            AttributeSyntax = classOrStructAttribute,
+                            ClassOrStruct = classOrStructAttribute.Parent.Parent,
+                            SyntaxTree = syntaxTree
+                        });
+                }
+            }
             return serializedTypeAttributeSyntaxWithGenerators;
         }
 
@@ -53,7 +96,16 @@ namespace SerializedTypeSourceGenerator
             // should create a scope as go
             if (node.Alias != null)
             {
-                aliasedUsings.Add(node);
+                var k = node.GlobalKeyword.Kind();
+                if(node.GlobalKeyword.Kind() != SyntaxKind.None)
+                {
+                    GlobalAliases.Add(node);
+                }
+                else
+                {
+                    aliasedUsings.Add(node);
+                }
+                
             }
            
         }
@@ -102,32 +154,16 @@ namespace SerializedTypeSourceGenerator
             return NameMatches(identifierName) || aliases.Any(al => al.typeAlias && al.alias == identifierName);
         }
 
+        private List<AttributeSyntax> classOrStructAttributes = new List<AttributeSyntax>();
+        private Dictionary<ISerializedTypeAttributeGenerator, List<(string alias, bool typeAlias)>> generatorAliases;
+        private readonly SyntaxTree syntaxTree;
+
         public override void VisitAttribute(AttributeSyntax node)
         {
             var classOrStructDeclarationSyntax = node.Parent?.Parent;
             if (classOrStructDeclarationSyntax != null)
             {
-                var attributeGenerator = SerializedTypesAttributeGenerators.Generators.FirstOrDefault(generator =>
-                {
-                    var attributeAliases = GetApplicableAliases(generator.FullyQualifiedName, generator.Namespace);
-                    return AttributeIsSerializedTypeAttribute(
-                            node,
-                            attributeAliases,
-                            generator.Namespace,
-                            generator.TypeNameWithoutAttribute
-                        );
-                });
-
-                if (attributeGenerator != null)
-                {
-                    serializedTypeAttributeSyntaxWithGenerators.Add(
-                        new SerializedTypeAttributeSyntaxWithGenerator { 
-                            Generator = attributeGenerator, 
-                            AttributeSyntax = node,
-                            ClassOrStruct = classOrStructDeclarationSyntax
-                        });
-                }
-                
+                classOrStructAttributes.Add(node);
             }
             
         }
