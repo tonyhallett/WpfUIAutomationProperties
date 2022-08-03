@@ -2,12 +2,16 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace SerializedTypeSourceGenerator
 {
     internal static class SerializedTypeSyntax
     {
-        public static IEnumerable<SerializedTypeDeclarationSyntaxWithGenerators> GetTypesWithSerializedTypeAttribute(IEnumerable<SyntaxTree> syntaxTrees)
+        public static IEnumerable<SerializedTypeDeclarationSyntaxWithGenerators> GetTypesWithSerializedTypeAttribute(
+            IEnumerable<SyntaxTree> syntaxTrees,
+            CancellationToken cancellationToken
+        )
         {
             var walkers = syntaxTrees.Select(syntaxTree => new SerializedTypeSyntaxWalker(syntaxTree)).ToList();
 
@@ -16,6 +20,7 @@ namespace SerializedTypeSourceGenerator
 
             return walkers.SelectMany(walker =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 return GetSerializedTypesFromSyntaxTree(walker.AttributedClassesOrStructs, aliasedGlobalUsings, walker.SyntaxTree);
             });
         }
@@ -49,7 +54,42 @@ namespace SerializedTypeSourceGenerator
                 }
             }).Where(serializedType => serializedType != null);
         }
+        
+        private static List<SerializedTypeAttributeSyntaxWithGenerator> GetAttributeGenerators(List<AttributeSyntax> attributes, List<UsingDirectiveSyntax> aliasedUsings)
+        {
+            return attributes.Select(attribute =>
+            {
+                var attributeGenerator = FindGenerator(attribute, aliasedUsings);
 
+                if (attributeGenerator != null)
+                {
+                    return new SerializedTypeAttributeSyntaxWithGenerator
+                    {
+                        Generator = attributeGenerator,
+                        AttributeSyntax = attribute,
+                    };
+                }
+                return null;
+            }).Where(attributeGenerator => attributeGenerator != null).ToList();
+        }
+
+        private static ISerializedTypeAttributeGenerator FindGenerator(
+            AttributeSyntax attribute,
+            List<UsingDirectiveSyntax> aliasedUsings
+        )
+        {
+            return SerializedTypesAttributeGenerators.Generators.FirstOrDefault(generator =>
+            {
+                var attributeAliases = GetApplicableAliases(aliasedUsings, generator.FullyQualifiedName, generator.Namespace);
+
+                return AttributeIsSerializedTypeAttribute(
+                        attribute,
+                        attributeAliases,
+                        generator.Namespace,
+                        generator.TypeNameWithoutAttribute
+                    );
+            });
+        }
 
         private static List<(string alias, bool typeAlias)> GetApplicableAliases(
             IEnumerable<UsingDirectiveSyntax> aliasedUsings,
@@ -101,40 +141,5 @@ namespace SerializedTypeSourceGenerator
             return NameMatches(identifierName) || aliases.Any(al => al.typeAlias && al.alias == identifierName);
         }
 
-        private static ISerializedTypeAttributeGenerator FindGenerator(
-            AttributeSyntax attribute,
-            List<UsingDirectiveSyntax> aliasedUsings
-        )
-        {
-            return SerializedTypesAttributeGenerators.Generators.FirstOrDefault(generator =>
-            {
-                var attributeAliases = GetApplicableAliases(aliasedUsings, generator.FullyQualifiedName, generator.Namespace);
-
-                return AttributeIsSerializedTypeAttribute(
-                        attribute,
-                        attributeAliases,
-                        generator.Namespace,
-                        generator.TypeNameWithoutAttribute
-                    );
-            });
-        }
-
-        private static List<SerializedTypeAttributeSyntaxWithGenerator> GetAttributeGenerators(List<AttributeSyntax> attributes, List<UsingDirectiveSyntax> aliasedUsings)
-        {
-            return attributes.Select(attribute =>
-            {
-                var attributeGenerator = FindGenerator(attribute, aliasedUsings);
-
-                if (attributeGenerator != null)
-                {
-                    return new SerializedTypeAttributeSyntaxWithGenerator
-                    {
-                        Generator = attributeGenerator,
-                        AttributeSyntax = attribute,
-                    };
-                }
-                return null;
-            }).Where(attributeGenerator => attributeGenerator != null).ToList();
-        }
     }
 }

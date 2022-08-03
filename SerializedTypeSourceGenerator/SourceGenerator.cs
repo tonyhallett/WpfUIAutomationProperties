@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace SerializedTypeSourceGenerator
 {
@@ -19,28 +20,39 @@ namespace SerializedTypeSourceGenerator
 
         public void Execute(GeneratorExecutionContext context)
         {
+            var cancellationToken = context.CancellationToken;
+
             WpfAutomationProperties.Initialize(context.Compilation);
             propertiesNotFoundBehaviour = PropertiesNotFoundBehaviourProvider.Provide(context);
-
+            
             var serializedTypes = GetSerializedTypes(
                     context.Compilation.SyntaxTrees,
+                    cancellationToken,
                     (st) => context.Compilation.GetSemanticModel(st)
                 );
 
             foreach (var serializedType in serializedTypes)
             {
-                GenerateFromSerializedType(context, serializedType);
+                GenerateFromSerializedType(context, serializedType, cancellationToken);
             }
         }
 
-        private IEnumerable<SerializedType> GetSerializedTypes(IEnumerable<SyntaxTree> syntaxTrees, Func<SyntaxTree, SemanticModel> semanticModelProvider)
+        private IEnumerable<SerializedType> GetSerializedTypes(
+            IEnumerable<SyntaxTree> syntaxTrees, 
+            CancellationToken cancellationToken,
+            Func<SyntaxTree, SemanticModel> semanticModelProvider)
         {
-            var typesWithAttribute = SerializedTypeSyntax.GetTypesWithSerializedTypeAttribute(syntaxTrees);
-            return SerializedType.From(typesWithAttribute, semanticModelProvider);
+            var typesWithAttribute = SerializedTypeSyntax.GetTypesWithSerializedTypeAttribute(syntaxTrees,cancellationToken);
+            return SerializedType.From(typesWithAttribute, cancellationToken, semanticModelProvider);
         }
 
-        private void GenerateFromSerializedType(GeneratorExecutionContext context, SerializedType serializedType)
+        private void GenerateFromSerializedType(
+            GeneratorExecutionContext context, 
+            SerializedType serializedType, 
+            CancellationToken cancellationToken
+        )
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (!ReportSerializedTypeDiagnostics(context, serializedType))
             {
                 var reportedPropertyDiagnostics = ReportSerializedTypePropertyDiagnostics(context, serializedType);

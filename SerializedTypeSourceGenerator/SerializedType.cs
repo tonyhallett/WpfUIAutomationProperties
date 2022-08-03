@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace SerializedTypeSourceGenerator
 {
@@ -11,10 +12,12 @@ namespace SerializedTypeSourceGenerator
     {
         internal static IEnumerable<SerializedType> From(
             IEnumerable<SerializedTypeDeclarationSyntaxWithGenerators> serializedTypesWithGenerators,
+            CancellationToken cancellationToken,
             Func<SyntaxTree, SemanticModel> semanticModelProvider)
         {
             return serializedTypesWithGenerators.Select(serializedTypeWithGenerators =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 var attributeGenerators = serializedTypeWithGenerators.AttributeGenerators;
                 var semanticModel = semanticModelProvider(serializedTypeWithGenerators.SyntaxTree);
                 
@@ -23,8 +26,10 @@ namespace SerializedTypeSourceGenerator
                 var allAttributeErrorDiagnostics = new List<Diagnostic>();
                 var customDiagnostics = new List<Diagnostic>();
                 var isSerializedType = false;
+
                 foreach(var attributeData in classOrStructSymbol.GetAttributes())
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     var correspondingSyntax = attributeData.ApplicationSyntaxReference.GetSyntax();
                     var correspondingAttributeWithGenerator = serializedTypeWithGenerators.AttributeGenerators.FirstOrDefault(serializedTypeAttribute => serializedTypeAttribute.AttributeSyntax == correspondingSyntax);
 
