@@ -217,6 +217,51 @@ partial {classOrStruct} TextBlockSerialized
                 );
         }
 
+
+        /*
+            Note that the CSharpSourceGeneratorTest has overridable CreateCompilationOptions
+            and that CSharpCompilationOptions has WithUsings - Global Namespace Usings 
+            https://docs.microsoft.com/en-us/dotnet/api/microsoft.codeanalysis.csharp.csharpcompilationoptions.usings?view=roslyn-dotnet-4.2.0#microsoft-codeanalysis-csharp-csharpcompilationoptions-usings
+
+            These are for csx usings though 
+            https://github.com/dotnet/roslyn/issues/58119
+            https://stackoverflow.com/questions/24658381/roslyn-csharpcompilation
+
+            There is no need to use overrides to provide an MSBuildWorkspace ( instead of the AdhocWorkspace that the test system provides )
+            so as to test global usings specified in the project file or implicitly added.
+            https://docs.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#using
+            https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-directive#global-modifier
+
+            https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
+            Set Sdk attribute to an available Sdk e.g
+            <Project Sdk="Microsoft.NET.Sdk">
+              ...
+            </Project>
+            While evaluating the project, MSBuild adds implicit imports for Sdk.props at the top of the project file and Sdk.targets at the bottom.
+            
+            https://github.com/dotnet/sdk/blob/main/src/Tasks/Microsoft.NET.Build.Tasks/sdk/Sdk.targets
+                ...
+                <Import Project="$(MSBuildThisFileDirectory)..\targets\Microsoft.NET.Sdk.targets"
+            https://github.com/dotnet/sdk/blob/main/src/Tasks/Microsoft.NET.Build.Tasks/targets/Microsoft.NET.Sdk.targets
+                ..
+                <Import Project="$(MSBuildThisFileDirectory)Microsoft.NET.GenerateGlobalUsings.targets" Condition="'$(Language)' == 'C#'"/>
+            https://github.com/dotnet/sdk/blob/main/src/Tasks/Microsoft.NET.Build.Tasks/targets/Microsoft.NET.GenerateGlobalUsings.targets
+                **************************************
+                This writes a class file based on the msbuild Using items to $(IntermediateOutputPath)$(MSBuildProjectName).GlobalUsings.g$(DefaultLanguageSourceExtension)
+                and includes it in the compilation.
+                https://github.com/dotnet/sdk/blob/main/src/Tasks/Microsoft.NET.Build.Tasks/GenerateGlobalUsings.cs
+
+            *** The props file adds the implicit usings ( Condition="'$(ImplicitUsings)' == 'true' Or '$(ImplicitUsings)' == 'enable'" )
+            https://github.com/dotnet/sdk/blob/main/src/Tasks/Microsoft.NET.Build.Tasks/sdk/Sdk.props
+                ..
+                <Import Project="$(MSBuildThisFileDirectory)..\targets\Microsoft.NET.Sdk.props" />
+            https://github.com/dotnet/sdk/blob/main/src/Tasks/Microsoft.NET.Build.Tasks/targets/Microsoft.NET.Sdk.props
+                ...
+                <Import Project="$(MSBuildThisFileDirectory)Microsoft.NET.Sdk.CSharp.props" Condition="'$(MSBuildProjectExtension)' == '.csproj'" />
+            https://github.com/dotnet/sdk/blob/main/src/Tasks/Microsoft.NET.Build.Tasks/targets/Microsoft.NET.Sdk.CSharp.props
+        */
+
+
         [Test]
         public Task Should_Work_With_Global_Usings()
         {

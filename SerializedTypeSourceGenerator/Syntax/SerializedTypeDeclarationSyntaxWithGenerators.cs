@@ -5,14 +5,20 @@ namespace SerializedTypeSourceGenerator
 {
     internal class SerializedTypeDeclarationSyntaxWithGenerators
     {
-        public SyntaxNode ClassOrStruct { get; set; }
-        public SyntaxTree SyntaxTree
+        public SerializedTypeDeclarationSyntaxWithGenerators(
+            SyntaxNode classOrStruct,
+            bool isClass,
+            SyntaxTree syntaxTree, 
+            List<SerializedTypeAttributeSyntaxWithGenerator> attributeGenerators)
         {
-            get
-            {
-                return AttributeGenerators[0].SyntaxTree;
-            }
+            ClassOrStruct = classOrStruct;
+            IsClass = isClass;
+            SyntaxTree = syntaxTree;
+            AttributeGenerators = attributeGenerators;
         }
-        public List<SerializedTypeAttributeSyntaxWithGenerator> AttributeGenerators { get; set; }
+        public SyntaxNode ClassOrStruct { get; set; }
+        public bool IsClass { get; set; }
+        public SyntaxTree SyntaxTree { get; set; }
+        public IReadOnlyList<SerializedTypeAttributeSyntaxWithGenerator> AttributeGenerators { get; set; }
     }
 }

@@ -1,20 +1,45 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SerializedTypeSourceGenerator
 {
+    internal class AttributedClassOrStruct
+    {
+        public AttributedClassOrStruct(SyntaxNode classOrStruct, bool isClass, List<UsingDirectiveSyntax> usings)
+        {
+            ClassOrStruct = classOrStruct;
+            IsClass = isClass;
+            Usings = usings.AsReadOnly();
+        }
+        public SyntaxNode ClassOrStruct { get; set; }
+        public bool IsClass { get; set; }
+       
+        public void AddAttribute(AttributeSyntax attribute)
+        {
+            Attributes.Add(attribute);
+        }
+        // todo readonly
+        public List<AttributeSyntax> Attributes { get; } = new List<AttributeSyntax>();
+        public IReadOnlyCollection<UsingDirectiveSyntax> Usings { get;}
+    }
+
     internal class SerializedTypeSyntaxWalker : CSharpSyntaxWalker
     {
-        private List<UsingDirectiveSyntax> aliasedUsings = new List<UsingDirectiveSyntax>();
-        public List<UsingDirectiveSyntax> GlobalAliases { get; internal set; } = new List<UsingDirectiveSyntax>();
+        private List<UsingDirectiveSyntax> globalUsings = new List<UsingDirectiveSyntax>();
+        private Stack<List<UsingDirectiveSyntax>> usingsStack = new Stack<List<UsingDirectiveSyntax>>();
+        private List<AttributedClassOrStruct> attributedClassesOrStructs = new List<AttributedClassOrStruct>();
+        private AttributedClassOrStruct currentAttributedClassOrStruct;
+
+        public IReadOnlyCollection<AttributedClassOrStruct> AttributedClassesOrStructs => attributedClassesOrStructs;
+        public IReadOnlyCollection<UsingDirectiveSyntax> GlobalUsings => globalUsings;
+        public SyntaxTree SyntaxTree { get; }
 
         public SerializedTypeSyntaxWalker(SyntaxTree syntaxTree)
         {
-            this.syntaxTree = syntaxTree;
+            this.SyntaxTree = syntaxTree;
+            usingsStack.Push(new List<UsingDirectiveSyntax>());
             this.Visit(syntaxTree.GetRoot());
         }
 
@@ -28,10 +53,7 @@ namespace SerializedTypeSourceGenerator
 
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
-            foreach(var attributeList in node.AttributeLists)
-            {
-                VisitAttributeList(attributeList);
-            }
+            VisitClassOrStructAttributes(node.AttributeLists, node, true);
         }
 
         public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
@@ -41,131 +63,47 @@ namespace SerializedTypeSourceGenerator
 
         public override void VisitStructDeclaration(StructDeclarationSyntax node)
         {
-            foreach (var attributeList in node.AttributeLists)
+            VisitClassOrStructAttributes(node.AttributeLists, node, false);
+        }
+
+        private void VisitClassOrStructAttributes(SyntaxList<AttributeListSyntax> attributeLists,SyntaxNode classOrStruct,bool isClass)
+        {
+            currentAttributedClassOrStruct = new AttributedClassOrStruct(classOrStruct, isClass, usingsStack.Peek());
+            attributedClassesOrStructs.Add(currentAttributedClassOrStruct);
+            foreach (var attributeList in attributeLists)
             {
                 VisitAttributeList(attributeList);
             }
         }
+
         #endregion
 
-
-        private void SetAliases(List<UsingDirectiveSyntax> globalAliases)
+        public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
-            aliasedUsings.AddRange(globalAliases);
-            generatorAliases = SerializedTypesAttributeGenerators.Generators.ToDictionary(
-                generator => generator,
-                generator => GetApplicableAliases(generator.FullyQualifiedName, generator.Namespace));
-        }
+            usingsStack.Push(new List<UsingDirectiveSyntax>(usingsStack.Peek()));
+            base.VisitNamespaceDeclaration(node);
+            usingsStack.Pop();
 
-        public List<SerializedTypeAttributeSyntaxWithGenerator> GetAttributeGenerators(List<UsingDirectiveSyntax> globalAliases)
-        {
-            SetAliases(globalAliases);
-
-            var serializedTypeAttributeSyntaxWithGenerators = new List<SerializedTypeAttributeSyntaxWithGenerator>();
-            foreach(var classOrStructAttribute in classOrStructAttributes)
-            {
-                var attributeGenerator = SerializedTypesAttributeGenerators.Generators.FirstOrDefault(generator =>
-                {
-                    var attributeAliases = generatorAliases[generator];
-                    return AttributeIsSerializedTypeAttribute(
-                            classOrStructAttribute,
-                            attributeAliases,
-                            generator.Namespace,
-                            generator.TypeNameWithoutAttribute
-                        );
-                });
-
-                if (attributeGenerator != null)
-                {
-                    serializedTypeAttributeSyntaxWithGenerators.Add(
-                        new SerializedTypeAttributeSyntaxWithGenerator
-                        {
-                            Generator = attributeGenerator,
-                            AttributeSyntax = classOrStructAttribute,
-                            ClassOrStruct = classOrStructAttribute.Parent.Parent,
-                            SyntaxTree = syntaxTree
-                        });
-                }
-            }
-            return serializedTypeAttributeSyntaxWithGenerators;
         }
 
         public override void VisitUsingDirective(UsingDirectiveSyntax node)
         {
-            // not all usings should be considered.....
-            // should create a scope as go
-            if (node.Alias != null)
+            if (node.GlobalKeyword.IsKind(SyntaxKind.None))
             {
-                var k = node.GlobalKeyword.Kind();
-                if(node.GlobalKeyword.Kind() != SyntaxKind.None)
-                {
-                    GlobalAliases.Add(node);
-                }
-                else
-                {
-                    aliasedUsings.Add(node);
-                }
-                
+                usingsStack.Peek().Add(node);
             }
-           
+            else
+            {
+                globalUsings.Add(node);
+            }
         }
-
-        private List<(string alias, bool typeAlias)> GetApplicableAliases(string fullyQualifiedName, string @namespace)
-        {
-            List<(string alias, bool typeAlias)> attributeAliases = new List<(string alias, bool typeAlias)>();
-            foreach (var aliasedUsing in aliasedUsings)
-            {
-                var alias = aliasedUsing.Alias.Name.ToString();
-                if(aliasedUsing.Name.ToString() == fullyQualifiedName)
-                {
-                    attributeAliases.Add((alias, true));
-                }else if(aliasedUsing.Name.ToString() == @namespace)
-                {
-                    attributeAliases.Add((alias, false));
-                }
-            }
-            return attributeAliases;
-        }
-
-        public static bool AttributeIsSerializedTypeAttribute(
-            AttributeSyntax attributeSyntax, 
-            List<(string alias, bool typeAlias)> aliases, 
-            string matchingNamespace, 
-            string attributeNameWithoutSuffix
-        )
-        {
-            var attributeNameWithSuffix = $"{attributeNameWithoutSuffix}Attribute";
-            bool NameMatches(string simpleName)
-            {
-                return simpleName == attributeNameWithoutSuffix || simpleName == attributeNameWithSuffix;
-            }
-
-            var name = attributeSyntax.Name;
-            if (name is QualifiedNameSyntax qualifiedNameSyntax)
-            {
-                var @namespace = qualifiedNameSyntax.Left.ToString();
-                if (NameMatches(qualifiedNameSyntax.Right.ToString())){
-                    return @namespace == matchingNamespace || aliases.Any(al => !al.typeAlias && al.alias == @namespace);
-                }
-                return false;
-            }
-
-            var identifierName = (name as IdentifierNameSyntax).ToString();
-            return NameMatches(identifierName) || aliases.Any(al => al.typeAlias && al.alias == identifierName);
-        }
-
-        private List<AttributeSyntax> classOrStructAttributes = new List<AttributeSyntax>();
-        private Dictionary<ISerializedTypeAttributeGenerator, List<(string alias, bool typeAlias)>> generatorAliases;
-        private readonly SyntaxTree syntaxTree;
 
         public override void VisitAttribute(AttributeSyntax node)
         {
-            var classOrStructDeclarationSyntax = node.Parent?.Parent;
-            if (classOrStructDeclarationSyntax != null)
+            if (currentAttributedClassOrStruct != null)
             {
-                classOrStructAttributes.Add(node);
+                currentAttributedClassOrStruct.AddAttribute(node);
             }
-            
         }
     }
 }

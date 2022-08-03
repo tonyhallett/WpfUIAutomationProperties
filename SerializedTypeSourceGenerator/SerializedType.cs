@@ -10,15 +10,15 @@ namespace SerializedTypeSourceGenerator
     internal class SerializedType
     {
         internal static IEnumerable<SerializedType> From(
-            IEnumerable<SerializedTypeDeclarationSyntaxWithGenerators> classesWithAttribute,
+            IEnumerable<SerializedTypeDeclarationSyntaxWithGenerators> serializedTypesWithGenerators,
             Func<SyntaxTree, SemanticModel> semanticModelProvider)
         {
-            return classesWithAttribute.Select(classWithAttribute =>
+            return serializedTypesWithGenerators.Select(serializedTypeWithGenerators =>
             {
-                var serializedTypes = classWithAttribute.AttributeGenerators;
-                var semanticModel = semanticModelProvider(classWithAttribute.SyntaxTree);
+                var attributeGenerators = serializedTypeWithGenerators.AttributeGenerators;
+                var semanticModel = semanticModelProvider(serializedTypeWithGenerators.SyntaxTree);
                 
-                var classOrStructSymbol = semanticModel.GetDeclaredSymbol(classWithAttribute.ClassOrStruct);
+                var classOrStructSymbol = semanticModel.GetDeclaredSymbol(serializedTypeWithGenerators.ClassOrStruct);
                 var serializedProperties = new List<ISerializedProperty>();
                 var allAttributeErrorDiagnostics = new List<Diagnostic>();
                 var customDiagnostics = new List<Diagnostic>();
@@ -26,7 +26,7 @@ namespace SerializedTypeSourceGenerator
                 foreach(var attributeData in classOrStructSymbol.GetAttributes())
                 {
                     var correspondingSyntax = attributeData.ApplicationSyntaxReference.GetSyntax();
-                    var correspondingAttributeWithGenerator = classWithAttribute.AttributeGenerators.FirstOrDefault(serializedTypeAttribute => serializedTypeAttribute.AttributeSyntax == correspondingSyntax);
+                    var correspondingAttributeWithGenerator = serializedTypeWithGenerators.AttributeGenerators.FirstOrDefault(serializedTypeAttribute => serializedTypeAttribute.AttributeSyntax == correspondingSyntax);
 
                     if (correspondingAttributeWithGenerator != null)
                     {
@@ -50,7 +50,13 @@ namespace SerializedTypeSourceGenerator
 
                 if (isSerializedType)
                 {
-                    return new SerializedType(allAttributeErrorDiagnostics, customDiagnostics, serializedProperties, classOrStructSymbol as INamedTypeSymbol);
+                    return new SerializedType(
+                        allAttributeErrorDiagnostics, 
+                        customDiagnostics, 
+                        serializedProperties, 
+                        classOrStructSymbol as INamedTypeSymbol, 
+                        serializedTypeWithGenerators.IsClass
+                    );
                 }
                 return null;
             }).Where(stc => stc != null);
@@ -102,16 +108,22 @@ namespace SerializedTypeSourceGenerator
                     );
 
         }
-        public SerializedType(List<Diagnostic> attributesErrorDiagnostics, List<Diagnostic> customDiagnostics, List<ISerializedProperty> serializedProperties, INamedTypeSymbol symbol)
+        public SerializedType(
+            List<Diagnostic> attributesErrorDiagnostics, 
+            List<Diagnostic> customDiagnostics, 
+            List<ISerializedProperty> serializedProperties, 
+            INamedTypeSymbol symbol,
+            bool isClass)
         {
             AttributesErrorDiagnostics = attributesErrorDiagnostics;
             CustomDiagnostics = customDiagnostics;
             Properties = serializedProperties;
             Symbol = symbol;
-
+            IsClass = isClass;
         }
 
-        public INamedTypeSymbol Symbol { get; set; }
+        public INamedTypeSymbol Symbol { get; }
+        public bool IsClass { get; }
         public List<Diagnostic> AttributesErrorDiagnostics { get; }
         public List<Diagnostic> CustomDiagnostics { get; }
         public List<ISerializedProperty> Properties { get; }

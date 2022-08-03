@@ -7,7 +7,5 @@ namespace SerializedTypeSourceGenerator
     {
         public AttributeSyntax AttributeSyntax { get; set; }
         public ISerializedTypeAttributeGenerator Generator { get; set; }
-        public SyntaxNode ClassOrStruct { get; internal set; }
-        public SyntaxTree SyntaxTree { get; set; }
     }
 }

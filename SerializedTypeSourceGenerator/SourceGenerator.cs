@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace SerializedTypeSourceGenerator
@@ -20,21 +19,11 @@ namespace SerializedTypeSourceGenerator
 
         public void Execute(GeneratorExecutionContext context)
         {
-            //Debugger.Launch();
             WpfAutomationProperties.Initialize(context.Compilation);
-            Generate(context);
-        }
-
-        private void Generate(GeneratorExecutionContext context)
-        {
             propertiesNotFoundBehaviour = PropertiesNotFoundBehaviourProvider.Provide(context);
-            GenerateFromSyntaxTrees(context, context.Compilation.SyntaxTrees);
-        }
 
-        private void GenerateFromSyntaxTrees(GeneratorExecutionContext context, IEnumerable<SyntaxTree> syntaxTrees)
-        {
             var serializedTypes = GetSerializedTypes(
-                    syntaxTrees,
+                    context.Compilation.SyntaxTrees,
                     (st) => context.Compilation.GetSemanticModel(st)
                 );
 
@@ -42,6 +31,12 @@ namespace SerializedTypeSourceGenerator
             {
                 GenerateFromSerializedType(context, serializedType);
             }
+        }
+
+        private IEnumerable<SerializedType> GetSerializedTypes(IEnumerable<SyntaxTree> syntaxTrees, Func<SyntaxTree, SemanticModel> semanticModelProvider)
+        {
+            var typesWithAttribute = SerializedTypeSyntax.GetTypesWithSerializedTypeAttribute(syntaxTrees);
+            return SerializedType.From(typesWithAttribute, semanticModelProvider);
         }
 
         private void GenerateFromSerializedType(GeneratorExecutionContext context, SerializedType serializedType)
@@ -154,12 +149,6 @@ namespace SerializedTypeSourceGenerator
         {
             var diagnostic = Diagnostic.Create(duplicatePropertyDescriptor, propertyLocation, serializedTypeName, propertyName);
             context.ReportDiagnostic(diagnostic);
-        }
-
-        private IEnumerable<SerializedType> GetSerializedTypes(IEnumerable<SyntaxTree> syntaxTrees, Func<SyntaxTree, SemanticModel> semanticModelProvider)
-        {
-            var typesWithAttribute = SerializedTypeSyntax.GetTypesWithSerializedTypeAttribute(syntaxTrees);
-            return SerializedType.From(typesWithAttribute, semanticModelProvider);
         }
 
         public void Initialize(GeneratorInitializationContext context)

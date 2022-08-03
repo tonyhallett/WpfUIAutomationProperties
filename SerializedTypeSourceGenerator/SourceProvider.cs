@@ -11,8 +11,7 @@ namespace SerializedTypeSourceGenerator
         public static (string hintName, string source) GetSource(SerializedType serializedType)
         {
             var serializedTypeName = serializedType.Symbol.Name;
-            var isStruct = serializedType.Symbol.TypeKind == TypeKind.Struct;
-            var classOrStruct = isStruct ? "struct" : "class";
+            var classOrStruct = serializedType.IsClass ? "class" : "struct";
             var propertyStringBuilder = new StringBuilder();
             var usingsStringBuilder = new StringBuilder();
             var namespaces = new List<string>();
