@@ -4,8 +4,8 @@
     {
         public static string ChangeButtonAutomationId { get; } = "ChangeBtn";
         public static string XamlAttachedConvertDependencyPropertiesTextBlockId { get; } =
-            XamlAttachedConvertDependencyPropertiesTextBlockAutomationControl.AutomationIdentity;
+            XamlAttachedConvertDependencyPropertiesTest.AutomationIdentity;
         public static string XamlAttachedSerializedTypeTextBlockId { get; } = 
-            XamlAttachedSerializedTypeTextBlockAutomationControl.AutomationIdentity;
+            XamlAttachedSerializedTypeTest.AutomationIdentity;
     }
 }

@@ -4,9 +4,9 @@ using System.Windows.Automation;
 
 namespace AutomationTest
 {
-    public abstract class XamlTextBlockAutomationControl : TextBlockAutomationControl
+    public abstract class XamlTextBlockTestBase : TextBlockItemStatusTestBase
     {
-        public XamlTextBlockAutomationControl(string automationId) : base(automationId) { }
+        public XamlTextBlockTestBase(string automationId) : base(automationId) { }
         
         public override void Setup(StackPanel stackPanel)
         {

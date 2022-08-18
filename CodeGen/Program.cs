@@ -31,10 +31,10 @@ StaticItemStatusControlsWriter.Write<ItemStatusTypedDictionarySerializer>(
     Path.Combine(wpfUIAutomationPropertiesDirectory, "AutomationPeers")
 );
 
-if (!Analyzer.ShouldProceed())
-{
-    throw new Exception("Cannot proceed");
-}
+//if (!Analyzer.ShouldProceed())
+//{
+//    throw new Exception("Cannot proceed");
+//}
 
 /*
     Not generating as have written the Source Generator and that there is an
@@ -42,7 +42,7 @@ if (!Analyzer.ShouldProceed())
     one of the types has an additional property in .Net Core.
     Also this is currently set up to include Brush properties.
 */
-var frameworkElementSerializedTypesDirectoryPath = Path.Combine(wpfUIAutomationPropertiesDirectory, "Serialization", "FrameworkElementSerializedTypes");
-FrameworkElementSerializeObjectWriter.Write(frameworkElementSerializedTypesDirectoryPath, Namespaces.FrameworkElementTypes);
+//var frameworkElementSerializedTypesDirectoryPath = Path.Combine(wpfUIAutomationPropertiesDirectory, "Serialization", "FrameworkElementSerializedTypes");
+//FrameworkElementSerializeObjectWriter.Write(frameworkElementSerializedTypesDirectoryPath, Namespaces.FrameworkElementTypes);
 
 

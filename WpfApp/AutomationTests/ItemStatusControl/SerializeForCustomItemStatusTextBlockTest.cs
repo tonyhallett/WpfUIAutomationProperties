@@ -5,7 +5,7 @@ using WpfUIAutomationProperties.Serialization;
 
 namespace AutomationTest
 {
-    public class SerializeForCustomItemStatusTextBlockAutomationControl : ItemStatusControlAutomationControlBase
+    public class SerializeForCustomItemStatusTextBlockTest : ItemStatusTextBlockTestBase
     {
         public class CustomItemStatusSerializer : IItemStatusSerializer
         {
@@ -30,14 +30,12 @@ namespace AutomationTest
         }
 
         public const string AutomationIdentity = "SerializeForCustomItemStatusTextBlock";
-        public SerializeForCustomItemStatusTextBlockAutomationControl() : base(AutomationIdentity)
-        {
-            TextBlock = new ItemStatusTextBlock();
-        }
+        public SerializeForCustomItemStatusTextBlockTest() : base(AutomationIdentity)
+        { }
 
         public override void DebugSetup()
         {
-            AutomationItemStatus.ItemStatusSerializer = new CustomItemStatusSerializer();
+            AutomationItemStatus.Serializer = new CustomItemStatusSerializer();
             
             AutomationItemStatus.SerializeForTextBlock = (textBlock, itemStatus) =>
             {

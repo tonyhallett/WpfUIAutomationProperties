@@ -4,7 +4,7 @@ using WpfUIAutomationProperties.Serialization;
 
 namespace AutomationTest
 {
-    public class StaticCtorItemStatusTextBlockCustomSerializerForCallAutomationControl : StaticCtorItemStatusTextBlockAutomationControlBase
+    public class StaticCtorItemStatusTextBlockCustomSerializerForCallTest : StaticCtorItemStatusTextBlockAutomationControlBase
     {
         private static JsonConvertSerializer ItemStatusSerializer = new JsonConvertSerializer();
         public class StaticCtorItemStatusTextBlockCustomSerializerForCall : TextBlock
@@ -21,7 +21,7 @@ namespace AutomationTest
         }
 
         public const string AutomationIdentity = "StaticCtorItemStatusTextBlockCustomSerializerForCall";
-        public StaticCtorItemStatusTextBlockCustomSerializerForCallAutomationControl() : base(AutomationIdentity) { }
+        public StaticCtorItemStatusTextBlockCustomSerializerForCallTest() : base(AutomationIdentity) { }
 
         protected override bool DebugIsExpectedItemStatus(string itemStatus, bool isInitialItemStatus)
         {

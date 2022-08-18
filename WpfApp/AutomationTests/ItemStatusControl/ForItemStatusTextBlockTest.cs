@@ -4,13 +4,11 @@ using WpfUIAutomationProperties.StaticItemStatus;
 
 namespace AutomationTest
 {
-    public class ForItemStatusTextBlockAutomationControl : ItemStatusControlAutomationControlBase
+    public class ForItemStatusTextBlockTest : ItemStatusTextBlockTestBase
     {
         public const string AutomationIdentity = "ForItemStatusTextBlock";
-        public ForItemStatusTextBlockAutomationControl() : base(AutomationIdentity)
-        {
-            TextBlock = new ItemStatusTextBlock();
-        }
+        public ForItemStatusTextBlockTest() : base(AutomationIdentity)
+        { }
 
         public override void DebugSetup()
         {

@@ -11,7 +11,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
     public static class ItemStatus
     {
         public static bool UseItemStatusDependencyProperty {get;set;}
-        public static IItemStatusSerializer ItemStatusSerializer { get; set; } = new ItemStatusTypedDictionarySerializer();
+        public static IItemStatusSerializer Serializer { get; set; } = new ItemStatusTypedDictionarySerializer();
         
         internal static string SerializeItemStatusForTypeWindow(Window element, string itemStatus){
             if (UseItemStatusDependencyProperty){
@@ -19,7 +19,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForWindow != null){
-               return ItemStatusSerializer.Serialize(SerializeForWindow(element, itemStatus));
+               return Serializer.Serialize(SerializeForWindow(element, itemStatus));
             }
             else{
                 return ForWindow(element, itemStatus);
@@ -36,7 +36,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForNavigationWindow != null){
-               return ItemStatusSerializer.Serialize(SerializeForNavigationWindow(element, itemStatus));
+               return Serializer.Serialize(SerializeForNavigationWindow(element, itemStatus));
             }
             else{
                 return ForNavigationWindow(element, itemStatus);
@@ -53,7 +53,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForButton != null){
-               return ItemStatusSerializer.Serialize(SerializeForButton(element, itemStatus));
+               return Serializer.Serialize(SerializeForButton(element, itemStatus));
             }
             else{
                 return ForButton(element, itemStatus);
@@ -70,7 +70,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForCheckBox != null){
-               return ItemStatusSerializer.Serialize(SerializeForCheckBox(element, itemStatus));
+               return Serializer.Serialize(SerializeForCheckBox(element, itemStatus));
             }
             else{
                 return ForCheckBox(element, itemStatus);
@@ -87,7 +87,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForComboBox != null){
-               return ItemStatusSerializer.Serialize(SerializeForComboBox(element, itemStatus));
+               return Serializer.Serialize(SerializeForComboBox(element, itemStatus));
             }
             else{
                 return ForComboBox(element, itemStatus);
@@ -104,7 +104,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForComboBoxItem != null){
-               return ItemStatusSerializer.Serialize(SerializeForComboBoxItem(element, itemStatus));
+               return Serializer.Serialize(SerializeForComboBoxItem(element, itemStatus));
             }
             else{
                 return ForComboBoxItem(element, itemStatus);
@@ -121,7 +121,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForContextMenu != null){
-               return ItemStatusSerializer.Serialize(SerializeForContextMenu(element, itemStatus));
+               return Serializer.Serialize(SerializeForContextMenu(element, itemStatus));
             }
             else{
                 return ForContextMenu(element, itemStatus);
@@ -138,7 +138,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForDocumentViewer != null){
-               return ItemStatusSerializer.Serialize(SerializeForDocumentViewer(element, itemStatus));
+               return Serializer.Serialize(SerializeForDocumentViewer(element, itemStatus));
             }
             else{
                 return ForDocumentViewer(element, itemStatus);
@@ -155,7 +155,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForExpander != null){
-               return ItemStatusSerializer.Serialize(SerializeForExpander(element, itemStatus));
+               return Serializer.Serialize(SerializeForExpander(element, itemStatus));
             }
             else{
                 return ForExpander(element, itemStatus);
@@ -172,7 +172,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForFlowDocumentReader != null){
-               return ItemStatusSerializer.Serialize(SerializeForFlowDocumentReader(element, itemStatus));
+               return Serializer.Serialize(SerializeForFlowDocumentReader(element, itemStatus));
             }
             else{
                 return ForFlowDocumentReader(element, itemStatus);
@@ -189,7 +189,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForFlowDocumentScrollViewer != null){
-               return ItemStatusSerializer.Serialize(SerializeForFlowDocumentScrollViewer(element, itemStatus));
+               return Serializer.Serialize(SerializeForFlowDocumentScrollViewer(element, itemStatus));
             }
             else{
                 return ForFlowDocumentScrollViewer(element, itemStatus);
@@ -206,7 +206,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForFrame != null){
-               return ItemStatusSerializer.Serialize(SerializeForFrame(element, itemStatus));
+               return Serializer.Serialize(SerializeForFrame(element, itemStatus));
             }
             else{
                 return ForFrame(element, itemStatus);
@@ -223,7 +223,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForGridSplitter != null){
-               return ItemStatusSerializer.Serialize(SerializeForGridSplitter(element, itemStatus));
+               return Serializer.Serialize(SerializeForGridSplitter(element, itemStatus));
             }
             else{
                 return ForGridSplitter(element, itemStatus);
@@ -240,7 +240,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForGridViewColumnHeader != null){
-               return ItemStatusSerializer.Serialize(SerializeForGridViewColumnHeader(element, itemStatus));
+               return Serializer.Serialize(SerializeForGridViewColumnHeader(element, itemStatus));
             }
             else{
                 return ForGridViewColumnHeader(element, itemStatus);
@@ -257,7 +257,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForGridViewHeaderRowPresenter != null){
-               return ItemStatusSerializer.Serialize(SerializeForGridViewHeaderRowPresenter(element, itemStatus));
+               return Serializer.Serialize(SerializeForGridViewHeaderRowPresenter(element, itemStatus));
             }
             else{
                 return ForGridViewHeaderRowPresenter(element, itemStatus);
@@ -274,7 +274,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForGroupBox != null){
-               return ItemStatusSerializer.Serialize(SerializeForGroupBox(element, itemStatus));
+               return Serializer.Serialize(SerializeForGroupBox(element, itemStatus));
             }
             else{
                 return ForGroupBox(element, itemStatus);
@@ -291,7 +291,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForGroupItem != null){
-               return ItemStatusSerializer.Serialize(SerializeForGroupItem(element, itemStatus));
+               return Serializer.Serialize(SerializeForGroupItem(element, itemStatus));
             }
             else{
                 return ForGroupItem(element, itemStatus);
@@ -308,7 +308,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForImage != null){
-               return ItemStatusSerializer.Serialize(SerializeForImage(element, itemStatus));
+               return Serializer.Serialize(SerializeForImage(element, itemStatus));
             }
             else{
                 return ForImage(element, itemStatus);
@@ -325,7 +325,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForInkCanvas != null){
-               return ItemStatusSerializer.Serialize(SerializeForInkCanvas(element, itemStatus));
+               return Serializer.Serialize(SerializeForInkCanvas(element, itemStatus));
             }
             else{
                 return ForInkCanvas(element, itemStatus);
@@ -342,7 +342,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForInkPresenter != null){
-               return ItemStatusSerializer.Serialize(SerializeForInkPresenter(element, itemStatus));
+               return Serializer.Serialize(SerializeForInkPresenter(element, itemStatus));
             }
             else{
                 return ForInkPresenter(element, itemStatus);
@@ -359,7 +359,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForLabel != null){
-               return ItemStatusSerializer.Serialize(SerializeForLabel(element, itemStatus));
+               return Serializer.Serialize(SerializeForLabel(element, itemStatus));
             }
             else{
                 return ForLabel(element, itemStatus);
@@ -376,7 +376,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForListBox != null){
-               return ItemStatusSerializer.Serialize(SerializeForListBox(element, itemStatus));
+               return Serializer.Serialize(SerializeForListBox(element, itemStatus));
             }
             else{
                 return ForListBox(element, itemStatus);
@@ -393,7 +393,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForListBoxItem != null){
-               return ItemStatusSerializer.Serialize(SerializeForListBoxItem(element, itemStatus));
+               return Serializer.Serialize(SerializeForListBoxItem(element, itemStatus));
             }
             else{
                 return ForListBoxItem(element, itemStatus);
@@ -410,7 +410,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForListView != null){
-               return ItemStatusSerializer.Serialize(SerializeForListView(element, itemStatus));
+               return Serializer.Serialize(SerializeForListView(element, itemStatus));
             }
             else{
                 return ForListView(element, itemStatus);
@@ -427,7 +427,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForListViewItem != null){
-               return ItemStatusSerializer.Serialize(SerializeForListViewItem(element, itemStatus));
+               return Serializer.Serialize(SerializeForListViewItem(element, itemStatus));
             }
             else{
                 return ForListViewItem(element, itemStatus);
@@ -444,7 +444,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForMediaElement != null){
-               return ItemStatusSerializer.Serialize(SerializeForMediaElement(element, itemStatus));
+               return Serializer.Serialize(SerializeForMediaElement(element, itemStatus));
             }
             else{
                 return ForMediaElement(element, itemStatus);
@@ -461,7 +461,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForMenu != null){
-               return ItemStatusSerializer.Serialize(SerializeForMenu(element, itemStatus));
+               return Serializer.Serialize(SerializeForMenu(element, itemStatus));
             }
             else{
                 return ForMenu(element, itemStatus);
@@ -478,7 +478,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForMenuItem != null){
-               return ItemStatusSerializer.Serialize(SerializeForMenuItem(element, itemStatus));
+               return Serializer.Serialize(SerializeForMenuItem(element, itemStatus));
             }
             else{
                 return ForMenuItem(element, itemStatus);
@@ -495,7 +495,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForProgressBar != null){
-               return ItemStatusSerializer.Serialize(SerializeForProgressBar(element, itemStatus));
+               return Serializer.Serialize(SerializeForProgressBar(element, itemStatus));
             }
             else{
                 return ForProgressBar(element, itemStatus);
@@ -512,7 +512,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForRadioButton != null){
-               return ItemStatusSerializer.Serialize(SerializeForRadioButton(element, itemStatus));
+               return Serializer.Serialize(SerializeForRadioButton(element, itemStatus));
             }
             else{
                 return ForRadioButton(element, itemStatus);
@@ -529,7 +529,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForRichTextBox != null){
-               return ItemStatusSerializer.Serialize(SerializeForRichTextBox(element, itemStatus));
+               return Serializer.Serialize(SerializeForRichTextBox(element, itemStatus));
             }
             else{
                 return ForRichTextBox(element, itemStatus);
@@ -546,7 +546,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForScrollViewer != null){
-               return ItemStatusSerializer.Serialize(SerializeForScrollViewer(element, itemStatus));
+               return Serializer.Serialize(SerializeForScrollViewer(element, itemStatus));
             }
             else{
                 return ForScrollViewer(element, itemStatus);
@@ -563,7 +563,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForSeparator != null){
-               return ItemStatusSerializer.Serialize(SerializeForSeparator(element, itemStatus));
+               return Serializer.Serialize(SerializeForSeparator(element, itemStatus));
             }
             else{
                 return ForSeparator(element, itemStatus);
@@ -580,7 +580,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForFlowDocumentPageViewer != null){
-               return ItemStatusSerializer.Serialize(SerializeForFlowDocumentPageViewer(element, itemStatus));
+               return Serializer.Serialize(SerializeForFlowDocumentPageViewer(element, itemStatus));
             }
             else{
                 return ForFlowDocumentPageViewer(element, itemStatus);
@@ -597,7 +597,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForSlider != null){
-               return ItemStatusSerializer.Serialize(SerializeForSlider(element, itemStatus));
+               return Serializer.Serialize(SerializeForSlider(element, itemStatus));
             }
             else{
                 return ForSlider(element, itemStatus);
@@ -614,7 +614,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForTabControl != null){
-               return ItemStatusSerializer.Serialize(SerializeForTabControl(element, itemStatus));
+               return Serializer.Serialize(SerializeForTabControl(element, itemStatus));
             }
             else{
                 return ForTabControl(element, itemStatus);
@@ -631,7 +631,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForTabItem != null){
-               return ItemStatusSerializer.Serialize(SerializeForTabItem(element, itemStatus));
+               return Serializer.Serialize(SerializeForTabItem(element, itemStatus));
             }
             else{
                 return ForTabItem(element, itemStatus);
@@ -648,7 +648,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForTextBlock != null){
-               return ItemStatusSerializer.Serialize(SerializeForTextBlock(element, itemStatus));
+               return Serializer.Serialize(SerializeForTextBlock(element, itemStatus));
             }
             else{
                 return ForTextBlock(element, itemStatus);
@@ -665,7 +665,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForTextBox != null){
-               return ItemStatusSerializer.Serialize(SerializeForTextBox(element, itemStatus));
+               return Serializer.Serialize(SerializeForTextBox(element, itemStatus));
             }
             else{
                 return ForTextBox(element, itemStatus);
@@ -682,7 +682,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForToolBar != null){
-               return ItemStatusSerializer.Serialize(SerializeForToolBar(element, itemStatus));
+               return Serializer.Serialize(SerializeForToolBar(element, itemStatus));
             }
             else{
                 return ForToolBar(element, itemStatus);
@@ -699,7 +699,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForToolTip != null){
-               return ItemStatusSerializer.Serialize(SerializeForToolTip(element, itemStatus));
+               return Serializer.Serialize(SerializeForToolTip(element, itemStatus));
             }
             else{
                 return ForToolTip(element, itemStatus);
@@ -716,7 +716,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForTreeView != null){
-               return ItemStatusSerializer.Serialize(SerializeForTreeView(element, itemStatus));
+               return Serializer.Serialize(SerializeForTreeView(element, itemStatus));
             }
             else{
                 return ForTreeView(element, itemStatus);
@@ -733,7 +733,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForTreeViewItem != null){
-               return ItemStatusSerializer.Serialize(SerializeForTreeViewItem(element, itemStatus));
+               return Serializer.Serialize(SerializeForTreeViewItem(element, itemStatus));
             }
             else{
                 return ForTreeViewItem(element, itemStatus);
@@ -750,7 +750,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForUserControl != null){
-               return ItemStatusSerializer.Serialize(SerializeForUserControl(element, itemStatus));
+               return Serializer.Serialize(SerializeForUserControl(element, itemStatus));
             }
             else{
                 return ForUserControl(element, itemStatus);
@@ -767,7 +767,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForViewport3D != null){
-               return ItemStatusSerializer.Serialize(SerializeForViewport3D(element, itemStatus));
+               return Serializer.Serialize(SerializeForViewport3D(element, itemStatus));
             }
             else{
                 return ForViewport3D(element, itemStatus);
@@ -784,7 +784,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForDocumentPageView != null){
-               return ItemStatusSerializer.Serialize(SerializeForDocumentPageView(element, itemStatus));
+               return Serializer.Serialize(SerializeForDocumentPageView(element, itemStatus));
             }
             else{
                 return ForDocumentPageView(element, itemStatus);
@@ -801,7 +801,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForRepeatButton != null){
-               return ItemStatusSerializer.Serialize(SerializeForRepeatButton(element, itemStatus));
+               return Serializer.Serialize(SerializeForRepeatButton(element, itemStatus));
             }
             else{
                 return ForRepeatButton(element, itemStatus);
@@ -818,7 +818,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForScrollBar != null){
-               return ItemStatusSerializer.Serialize(SerializeForScrollBar(element, itemStatus));
+               return Serializer.Serialize(SerializeForScrollBar(element, itemStatus));
             }
             else{
                 return ForScrollBar(element, itemStatus);
@@ -835,7 +835,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForStatusBar != null){
-               return ItemStatusSerializer.Serialize(SerializeForStatusBar(element, itemStatus));
+               return Serializer.Serialize(SerializeForStatusBar(element, itemStatus));
             }
             else{
                 return ForStatusBar(element, itemStatus);
@@ -852,7 +852,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForStatusBarItem != null){
-               return ItemStatusSerializer.Serialize(SerializeForStatusBarItem(element, itemStatus));
+               return Serializer.Serialize(SerializeForStatusBarItem(element, itemStatus));
             }
             else{
                 return ForStatusBarItem(element, itemStatus);
@@ -869,7 +869,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForThumb != null){
-               return ItemStatusSerializer.Serialize(SerializeForThumb(element, itemStatus));
+               return Serializer.Serialize(SerializeForThumb(element, itemStatus));
             }
             else{
                 return ForThumb(element, itemStatus);
@@ -886,7 +886,7 @@ namespace WpfUIAutomationProperties.StaticItemStatus
             }
 
             if(SerializeForToggleButton != null){
-               return ItemStatusSerializer.Serialize(SerializeForToggleButton(element, itemStatus));
+               return Serializer.Serialize(SerializeForToggleButton(element, itemStatus));
             }
             else{
                 return ForToggleButton(element, itemStatus);

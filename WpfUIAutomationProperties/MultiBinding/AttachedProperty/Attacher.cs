@@ -19,7 +19,7 @@ namespace WpfUIAutomationProperties.MultiBinding
         public static readonly DependencyProperty SerializedTypeProperty =
             DependencyProperty.RegisterAttached("SerializedType", typeof(Type), typeof(Attacher), new PropertyMetadata(null,(target,args) =>
             {
-                ItemStatus.Apply(args.NewValue as Type, target as FrameworkElement);
+                ItemStatus.ForElement(args.NewValue as Type, target as FrameworkElement);
             }));
         #endregion
 
@@ -31,7 +31,7 @@ namespace WpfUIAutomationProperties.MultiBinding
           typeof(Attacher),
           new FrameworkPropertyMetadata(defaultValue: new DependencyPropertyList(), propertyChangedCallback:(target,args) =>
           {
-              ItemStatus.Apply(target as FrameworkElement, args.NewValue as DependencyPropertyList);
+              ItemStatus.ForElement(target as FrameworkElement, args.NewValue as DependencyPropertyList);
           })
         );
 
@@ -50,7 +50,7 @@ namespace WpfUIAutomationProperties.MultiBinding
           typeof(Attacher),
           new FrameworkPropertyMetadata(defaultValue: new ConvertDependencyPropertyList(), propertyChangedCallback: (target, args) =>
           {
-              ItemStatus.Apply(target as FrameworkElement, args.NewValue as ConvertDependencyPropertyList);
+              ItemStatus.ForElement(target as FrameworkElement, args.NewValue as ConvertDependencyPropertyList);
           })
         );
 

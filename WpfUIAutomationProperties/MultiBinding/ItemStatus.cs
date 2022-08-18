@@ -10,9 +10,9 @@ namespace WpfUIAutomationProperties.MultiBinding
 {
     public static class ItemStatus
     {
-        public static IItemStatusSerializer ItemStatusSerializer { get; set; } = new ItemStatusTypedDictionarySerializer();
+        public static IItemStatusSerializer Serializer { get; set; } = new ItemStatusTypedDictionarySerializer();
         #region Serialized Type
-        public static void Apply<TSerialized,TFrameworkElement>(
+        public static void ForElement<TSerialized,TFrameworkElement>(
             TFrameworkElement element, 
             Func<object, string> serializer = null
         ) where TFrameworkElement : FrameworkElement where TSerialized : new()
@@ -21,14 +21,14 @@ namespace WpfUIAutomationProperties.MultiBinding
             
             var mappedFrameworkElementProperties = 
                 MappedFrameworkElementPropertiesFactory.Get<TSerialized,TFrameworkElement>();
-            Apply(element, 
+            ForElement(element, 
                 mappedFrameworkElementProperties.ConvertDependencyProperties,
                 reflectionActivatingPropertySetter.ActivateAndSetProperties,
                 serializer
             );
         }
 
-        public static void Apply(
+        internal static void ForElement(
             Type serializedObjectType,
             FrameworkElement element, 
             Func<object, string> serializer = null
@@ -37,7 +37,7 @@ namespace WpfUIAutomationProperties.MultiBinding
             var reflectionActivatingPropertySetter = ReflectionActivatingPropertySetterFactory.Get(serializedObjectType);
             var mappedFrameworkElementProperties = MappedFrameworkElementPropertiesFactory.Get(serializedObjectType, element.GetType());
             
-            Apply(element,
+            ForElement(element,
                 mappedFrameworkElementProperties.ConvertDependencyProperties,
                 reflectionActivatingPropertySetter.ActivateAndSetProperties,
                 serializer
@@ -46,10 +46,10 @@ namespace WpfUIAutomationProperties.MultiBinding
 
         #endregion
 
-        public static void Apply(
+        public static void ForElement(
             FrameworkElement element, 
             IEnumerable<DependencyProperty> dps,
-            Func<IEnumerable<(string propertyName, object value)>, object> converter = null,
+            Func<Dictionary<string,object>, object> converter = null,
             Func<object, string> serializer = null
         )
         {
@@ -59,7 +59,7 @@ namespace WpfUIAutomationProperties.MultiBinding
             }
             else
             {
-                Apply(element, 
+                ForElement(element, 
                     dps.Select(dp => new NoConvertDependencyProperty { DependencyProperty = dp }), 
                     converter, 
                     serializer
@@ -70,10 +70,10 @@ namespace WpfUIAutomationProperties.MultiBinding
         private static void RemoveBinding(FrameworkElement element) => 
             BindingOperations.ClearBinding(element, AutomationProperties.ItemStatusProperty);
 
-        public static void Apply(
+        public static void ForElement(
             FrameworkElement element, 
             IEnumerable<IConvertDependencyProperty> convertDependencyProperties,
-            Func<IEnumerable<(string propertyName, object value)>, object> converter = null,
+            Func<Dictionary<string,object>, object> converter = null,
             Func<object, string> serializer = null
         )
         {
@@ -90,7 +90,7 @@ namespace WpfUIAutomationProperties.MultiBinding
         private static void ApplyMultiBinding(
             FrameworkElement element, 
             IEnumerable<IConvertDependencyProperty> convertDependencyProperties,
-            Func<IEnumerable<(string propertyName, object value)>, object> converter,
+            Func<Dictionary<string,object>, object> converter,
             Func<object, string> serializer
         )
         {
@@ -103,19 +103,18 @@ namespace WpfUIAutomationProperties.MultiBinding
         private static System.Windows.Data.MultiBinding GetNameValueConvertedMultiBinding(
             FrameworkElement element,
             IEnumerable<IConvertDependencyProperty> convertDependencyProperties,
-            Func<IEnumerable<(string propertyName, object value)>, object> converter,
+            Func<Dictionary<string,object>, object> converter,
             Func<object, string> serializer
         )
         {
-            serializer = serializer ?? ItemStatusSerializer.Serialize;
-            converter = converter ?? ((namedStatuses) => namedStatuses.ToDictionary(
-                namedStatus => namedStatus.propertyName,
-                namedStatus => namedStatus.value
-            ));
+            serializer = serializer ?? Serializer.Serialize;
+            converter = converter ?? ((d) => d);
+
             var multiBinding = new System.Windows.Data.MultiBinding
             {
                 Converter = new SerializingItemStatusConverter(converter, serializer),
             };
+            
             multiBinding.Bindings.AddRange(
                 convertDependencyProperties.Select(
                     convertDependencyProperty => GetNameValueConvertedBinding(convertDependencyProperty, element)

@@ -9,7 +9,7 @@ namespace AutomationTest
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ITestableAutomationControl controller;
+        private IItemStatusTestController controller;
 
         public MainWindow(string[] args)
         {

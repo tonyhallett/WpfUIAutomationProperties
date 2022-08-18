@@ -2,7 +2,8 @@
 
 namespace AutomationTest
 {
-    public interface IAutomationControl {
+    public interface IItemStatusTestController : IItemStatusTest
+    {
         void Setup(StackPanel panel);
         void DebugSetup();
         void Change();

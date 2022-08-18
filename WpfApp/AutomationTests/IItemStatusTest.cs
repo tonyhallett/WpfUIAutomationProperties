@@ -1,6 +1,6 @@
 ﻿namespace AutomationTest
 {
-    public interface ITestItemStatus
+    public interface IItemStatusTest
     {
         bool IsDebug { get; set; }
         string AutomationId { get; }

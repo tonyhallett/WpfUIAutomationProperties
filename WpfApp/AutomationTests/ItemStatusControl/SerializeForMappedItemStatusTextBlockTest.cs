@@ -4,11 +4,10 @@ using WpfUIAutomationProperties.StaticItemStatus;
 
 namespace AutomationTest
 {
-    public class SerializeForMappedItemStatusTextBlockAutomationControl : ItemStatusControlAutomationControlBase
+    public class SerializeForMappedItemStatusTextBlockTest : ItemStatusTextBlockTestBase
     {
         public const string AutomationIdentity = "SerializeForMappedItemStatusTextBlock";
-        public SerializeForMappedItemStatusTextBlockAutomationControl() : base(AutomationIdentity) {
-            TextBlock = new ItemStatusTextBlock();
+        public SerializeForMappedItemStatusTextBlockTest() : base(AutomationIdentity) {
         }
         
         public override void DebugSetup()
@@ -22,7 +21,7 @@ namespace AutomationTest
 
         protected override bool DebugIsExpectedItemStatus(string itemStatus, bool isInitialItemStatus)
         {
-            return SerializedTypeDebugExpectedStatus.IsExpected(TextBlock, itemStatus, ItemStatus.ItemStatusSerializer);
+            return SerializedTypeDebugExpectedStatus.IsExpected(TextBlock, itemStatus, ItemStatus.Serializer);
         }
     }
 }

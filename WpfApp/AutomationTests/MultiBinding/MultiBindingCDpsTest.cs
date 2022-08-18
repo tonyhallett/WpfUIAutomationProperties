@@ -7,13 +7,13 @@ using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace AutomationTest
 {
-    public class MultiBindingCDpsDictionaryAutomationControl : TextBlockAutomationControl
+    public class MultiBindingCDpsTest : TextBlockItemStatusTestBase
     {
         public const string AutomationIdentity = "MultiBindingCDpsDictionary";
-        public MultiBindingCDpsDictionaryAutomationControl() : base(AutomationIdentity) { }
+        public MultiBindingCDpsTest() : base(AutomationIdentity) { }
         public override void DebugSetup()
         {
-            ItemStatus.Apply(TextBlock, new List<IConvertDependencyProperty>
+            ItemStatus.ForElement(TextBlock, new List<IConvertDependencyProperty>
             {
                 new FuncConvertDependencyProperty<FontFamily>(WpfTextBlock.FontFamilyProperty,ff => ff.Source),
                 new ToStringConvertDependencyProperty(WpfTextBlock.BackgroundProperty),
@@ -23,7 +23,7 @@ namespace AutomationTest
         }
         protected override bool DebugIsExpectedItemStatus(string itemStatus, bool isInitialItemStatus)
         {
-            var dictionary = ItemStatus.ItemStatusSerializer.Deserialize<Dictionary<string, object>>(itemStatus);
+            var dictionary = ItemStatus.Serializer.Deserialize<Dictionary<string, object>>(itemStatus);
 
             if (dictionary.Count != 4) return false;
 

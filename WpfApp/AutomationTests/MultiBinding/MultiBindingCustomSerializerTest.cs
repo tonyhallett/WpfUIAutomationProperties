@@ -3,14 +3,15 @@ using WpfUIAutomationProperties.Serialization;
 
 namespace AutomationTest
 {
-    public class MultiBindingCustomSerializerArgumentDictionaryAutomationControl : TextBlockAutomationControl
+    public class MultiBindingCustomSerializerTest : TextBlockItemStatusTestBase
     {
-        public const string AutomationIdentity = "MultiBindingCustomSerializerArgumentDictionary";
+        public const string AutomationIdentity = "MultiBindingCustomSerializerDictionary";
         private static JsonConvertSerializer ItemStatusSerializer = new JsonConvertSerializer();
-        public MultiBindingCustomSerializerArgumentDictionaryAutomationControl() : base(AutomationIdentity) { }
+        public MultiBindingCustomSerializerTest() : base(AutomationIdentity) { }
         public override void DebugSetup()
         {
-            ItemStatus.Apply(TextBlock, CustomSerialized.DependencyProperties, null, ItemStatusSerializer.Serialize);
+            ItemStatus.Serializer = ItemStatusSerializer;
+            ItemStatus.ForElement(TextBlock, CustomSerialized.DependencyProperties);
         }
         protected override bool DebugIsExpectedItemStatus(string itemStatus, bool isInitialItemStatus)
         {

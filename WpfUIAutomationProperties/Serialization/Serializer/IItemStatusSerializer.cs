@@ -4,7 +4,6 @@
     {
         string Serialize(object itemStatus);
 
-
         T Deserialize<T>(string serialized);
         
     }

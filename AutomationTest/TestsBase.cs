@@ -64,26 +64,27 @@ namespace AutomationTest
             return CrossPlatformExeFinder.Find(isDebug, "WpfApp", targetFramework);
         }
 
-        [TestCase(SerializeForMappedItemStatusTextBlockAutomationControl.AutomationIdentity)]
-        [TestCase(ForItemStatusTextBlockAutomationControl.AutomationIdentity)]
-        [TestCase(SerializeForCustomItemStatusTextBlockAutomationControl.AutomationIdentity)]
+        [TestCase(SerializeForMappedItemStatusTextBlockTest.AutomationIdentity)]
+        [TestCase(ForItemStatusTextBlockTest.AutomationIdentity)]
+        [TestCase(SerializeForCustomItemStatusTextBlockTest.AutomationIdentity)]
 
-        [TestCase(StaticCtorItemStatusTextBlockDpsDictionaryAutomationControl.AutomationIdentity)]
-        [TestCase(StaticCtorItemStatusTextBlockCDpsDictionaryAutomationControl.AutomationIdentity)]
-        [TestCase(StaticCtorItemStatusTextBlockSerializedTypeAutomationControl.AutomationIdentity)]
-        [TestCase(StaticCtorItemStatusTextBlockCustomSerializerAutomationControl.AutomationIdentity)]
-        [TestCase(StaticCtorItemStatusTextBlockCustomSerializerForCallAutomationControl.AutomationIdentity)]
+        [TestCase(StaticCtorItemStatusTextBlockDpsDictionaryTest.AutomationIdentity)]
+        [TestCase(StaticCtorItemStatusTextBlockCDpsDictionaryTest.AutomationIdentity)]
+        [TestCase(StaticCtorItemStatusTextBlockSerializedTypeTest.AutomationIdentity)]
+        [TestCase(StaticCtorItemStatusTextBlockCustomSerializerTest.AutomationIdentity)]
+        [TestCase(StaticCtorItemStatusTextBlockCustomSerializerForCallTest.AutomationIdentity)]
 
-        [TestCase(MultiBindingDpsDictionaryAutomationControl.AutomationIdentity)]
-        [TestCase(MultiBindingCDpsDictionaryAutomationControl.AutomationIdentity)]
-        [TestCase(MultiBindingSerializedTypeAutomationControl.AutomationIdentity)]
-        [TestCase(MultiBindingCustomSerializerDictionaryAutomationControl.AutomationIdentity)]
-        [TestCase(MultiBindingCustomSerializerArgumentDictionaryAutomationControl.AutomationIdentity)]
-        [TestCase(XamlAttachedConvertDependencyPropertiesTextBlockAutomationControl.AutomationIdentity)]
-        [TestCase(XamlAttachedSerializedTypeTextBlockAutomationControl.AutomationIdentity)]
+        [TestCase(MultiBindingDpsTest.AutomationIdentity)]
+        [TestCase(MultiBindingCDpsTest.AutomationIdentity)]
+        [TestCase(MultiBindingSerializedTypeTest.AutomationIdentity)]
+        [TestCase(MultiBindingCustomSerializerTest.AutomationIdentity)]
+        [TestCase(MultiBindingCustomSerializerArgumentTest.AutomationIdentity)]
+        [TestCase(XamlAttachedConvertDependencyPropertiesTest.AutomationIdentity)]
+        [TestCase(XamlAttachedSerializedTypeTest.AutomationIdentity)]
 
-        [TestCase(SerializedTextBlockSerializeConvertAutomationControl.AutomationIdentity)]
-        [TestCase(SerializedTextBlockPropertyDerivedTypeAutomationControl.AutomationIdentity)]
+        [TestCase(SerializedTextBlockSerializeConvertTest.AutomationIdentity)]
+        [TestCase(SerializedTextBlockPropertyDerivedTypeTest.AutomationIdentity)]
+        [TestCase(SerializedTypeAttachedPropertyTest.AutomationIdentity)]
         [Apartment(ApartmentState.STA)]
         public void HasExpectedItemStatus(string automationId)
         {
@@ -95,7 +96,7 @@ namespace AutomationTest
 
             this.windowsDriver = new WindowsDriver(appiumOptions);
 
-            var testItemStatus = ItemStatusAutomation.TestableAutomationControls()
+            var testItemStatus = ItemStatusAutomation.ItemStatusTests()
                 .Single(tis => tis.AutomationId == automationId);
             testItemStatus.IsDebug = isDebug;
             var element = windowsDriver.FindElement(MobileBy.AccessibilityId(automationId));

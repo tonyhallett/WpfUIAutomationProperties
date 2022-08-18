@@ -5,7 +5,7 @@ using WpfUIAutomationProperties.Serialization;
 
 namespace AutomationTest
 {
-    public class SerializedTextBlockSerializeConvertAutomationControl : TextBlockAutomationControl
+    public class SerializedTextBlockSerializeConvertTest : TextBlockItemStatusTestBase
     {
         public const string AutomationIdentity = "SerializeConvert";
 
@@ -23,15 +23,15 @@ namespace AutomationTest
             public SerializeConvertBrush Background { get; set; }
         }
 
-        public SerializedTextBlockSerializeConvertAutomationControl() : base(AutomationIdentity) { }
+        public SerializedTextBlockSerializeConvertTest() : base(AutomationIdentity) { }
 
         public override void DebugSetup()
         {
-            ItemStatus.Apply<SerializedTypeWithConvert, TextBlock>(TextBlock);
+            ItemStatus.ForElement<SerializedTypeWithConvert, TextBlock>(TextBlock);
         }
         protected override bool DebugIsExpectedItemStatus(string itemStatus, bool isInitialItemStatus)
         {
-            var serializedTypeWithConvert = ItemStatus.ItemStatusSerializer.Deserialize<SerializedTypeWithConvert>(itemStatus);
+            var serializedTypeWithConvert = ItemStatus.Serializer.Deserialize<SerializedTypeWithConvert>(itemStatus);
             return serializedTypeWithConvert.Background.BrushType == typeof(SolidColorBrush).Name;
         }
     }

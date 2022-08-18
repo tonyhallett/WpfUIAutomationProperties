@@ -11,13 +11,13 @@ using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace AutomationTest
 {
-    public class MultiBindingDpsDictionaryAutomationControl : TextBlockAutomationControl
+    public class MultiBindingDpsTest : TextBlockItemStatusTestBase
     {
         public const string AutomationIdentity = "MultiBindingDpsDictionary";
-        public MultiBindingDpsDictionaryAutomationControl() : base(AutomationIdentity) { }
+        public MultiBindingDpsTest() : base(AutomationIdentity) { }
         public override void DebugSetup()
         {
-            ItemStatus.Apply(TextBlock, new List<DependencyProperty>
+            ItemStatus.ForElement(TextBlock, new List<DependencyProperty>
             {
                 WpfTextBlock.FontFamilyProperty,
                 WpfTextBlock.BackgroundProperty,
@@ -27,7 +27,7 @@ namespace AutomationTest
         }
         protected override bool DebugIsExpectedItemStatus(string itemStatus, bool isInitialItemStatus)
         {
-            var dictionary = ItemStatus.ItemStatusSerializer.Deserialize<Dictionary<string,object>>(itemStatus);
+            var dictionary = ItemStatus.Serializer.Deserialize<Dictionary<string,object>>(itemStatus);
             
             if (dictionary.Count != 4) return false;
 

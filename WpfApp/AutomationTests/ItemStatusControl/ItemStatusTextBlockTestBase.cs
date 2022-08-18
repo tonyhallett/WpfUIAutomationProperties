@@ -1,12 +1,15 @@
 ﻿using AutomationItemStatus = WpfUIAutomationProperties.StaticItemStatus.ItemStatus;
 using System.Windows.Automation;
+using WpfUIAutomationProperties.StaticItemStatus;
 
 namespace AutomationTest
 {
-    public abstract class ItemStatusControlAutomationControlBase : TextBlockAutomationControl
+    public abstract class ItemStatusTextBlockTestBase : TextBlockItemStatusTestBase
     {
         protected const string ItemStatusPropertyValue = "From AutomationProperties.ItemStatusProperty";
-        public ItemStatusControlAutomationControlBase(string automationId) : base(automationId) { }
+        public ItemStatusTextBlockTestBase(string automationId) : base(automationId) {
+            TextBlock = new ItemStatusTextBlock();
+        }
 
         protected override void AdditionalSetup()
         {

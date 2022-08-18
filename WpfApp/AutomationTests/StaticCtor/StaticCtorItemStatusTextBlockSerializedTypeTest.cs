@@ -3,7 +3,7 @@ using WpfUIAutomationProperties.StaticConstructor;
 
 namespace AutomationTest
 {
-    public class StaticCtorItemStatusTextBlockSerializedTypeAutomationControl : StaticCtorItemStatusTextBlockAutomationControlBase
+    public class StaticCtorItemStatusTextBlockSerializedTypeTest : StaticCtorItemStatusTextBlockAutomationControlBase
     {
         public class StaticCtorItemStatusTextBlockSerializedType : TextBlock
         {
@@ -15,11 +15,11 @@ namespace AutomationTest
         }
 
         public const string AutomationIdentity = "StaticCtorItemStatusTextBlockSerializedType";
-        public StaticCtorItemStatusTextBlockSerializedTypeAutomationControl() : base(AutomationIdentity) { }
+        public StaticCtorItemStatusTextBlockSerializedTypeTest() : base(AutomationIdentity) { }
 
         protected override bool DebugIsExpectedItemStatus(string itemStatus, bool isInitialItemStatus)
         {
-            return SerializedTypeDebugExpectedStatus.IsExpected(TextBlock, itemStatus, ItemStatus.ItemStatusSerializer);
+            return SerializedTypeDebugExpectedStatus.IsExpected(TextBlock, itemStatus, ItemStatus.Serializer);
         }
 
         protected override TextBlock GetItemStatusTextBlock() => new StaticCtorItemStatusTextBlockSerializedType();

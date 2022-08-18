@@ -3,7 +3,7 @@ using WpfUIAutomationProperties.Serialization;
 
 namespace AutomationTest
 {
-    public class StaticCtorItemStatusTextBlockCustomSerializerAutomationControl : StaticCtorItemStatusTextBlockAutomationControlBase
+    public class StaticCtorItemStatusTextBlockCustomSerializerTest : StaticCtorItemStatusTextBlockAutomationControlBase
     {
         private static JsonConvertSerializer ItemStatusSerializer = new JsonConvertSerializer();
         public class StaticCtorItemStatusTextBlockCustomSerializer : TextBlock
@@ -11,7 +11,7 @@ namespace AutomationTest
             
             static StaticCtorItemStatusTextBlockCustomSerializer()
             {
-                WpfUIAutomationProperties.StaticConstructor.ItemStatus.ItemStatusSerializer = ItemStatusSerializer;
+                WpfUIAutomationProperties.StaticConstructor.ItemStatus.Serializer = ItemStatusSerializer;
                 WpfUIAutomationProperties.StaticConstructor.ItemStatus
                     .ForType<StaticCtorItemStatusTextBlockCustomSerializer>(
                         CustomSerialized.DependencyProperties
@@ -20,7 +20,7 @@ namespace AutomationTest
         }
 
         public const string AutomationIdentity = "StaticCtorItemStatusTextBlockCustomSerializer";
-        public StaticCtorItemStatusTextBlockCustomSerializerAutomationControl() : base(AutomationIdentity) { }
+        public StaticCtorItemStatusTextBlockCustomSerializerTest() : base(AutomationIdentity) { }
 
         protected override bool DebugIsExpectedItemStatus(string itemStatus, bool isInitialItemStatus)
         {

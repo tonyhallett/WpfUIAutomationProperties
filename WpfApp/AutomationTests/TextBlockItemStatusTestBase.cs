@@ -6,13 +6,13 @@ using WpfUIAutomationProperties.Serialization;
 
 namespace AutomationTest
 {
-    public abstract class TextBlockAutomationControl : ITestableAutomationControl
+    public abstract class TextBlockItemStatusTestBase : IItemStatusTestController
     {
         private static FontFamily ChangedFontFamily = new FontFamily("Arial");
         private static SolidColorBrush StartingBackground = new SolidColorBrush(Color.FromArgb(50, 0, 0, 255));
         private static SolidColorBrush ChangedBackground = new SolidColorBrush(Color.FromArgb(75, 0, 255, 0));
         
-        public TextBlockAutomationControl(
+        public TextBlockItemStatusTestBase(
             string automationId
         )
         {

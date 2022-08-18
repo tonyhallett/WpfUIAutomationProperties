@@ -3,17 +3,17 @@ using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace AutomationTest
 {
-    public class MultiBindingSerializedTypeAutomationControl : TextBlockAutomationControl
+    public class MultiBindingSerializedTypeTest : TextBlockItemStatusTestBase
     {
         public const string AutomationIdentity = "MultiBindingSerializedType";
-        public MultiBindingSerializedTypeAutomationControl() : base(AutomationIdentity) { }
+        public MultiBindingSerializedTypeTest() : base(AutomationIdentity) { }
         public override void DebugSetup()
         {
-            ItemStatus.Apply<SerializedTextBlock, WpfTextBlock>(TextBlock);
+            ItemStatus.ForElement<SerializedTextBlock, WpfTextBlock>(TextBlock);
         }
         protected override bool DebugIsExpectedItemStatus(string itemStatus, bool isInitialItemStatus)
         {
-            return SerializedTypeDebugExpectedStatus.IsExpected(TextBlock, itemStatus, ItemStatus.ItemStatusSerializer);
+            return SerializedTypeDebugExpectedStatus.IsExpected(TextBlock, itemStatus, ItemStatus.Serializer);
         }
     }
 }

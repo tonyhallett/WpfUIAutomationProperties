@@ -8,7 +8,7 @@ using WpfUIAutomationProperties.StaticConstructor;
 
 namespace AutomationTest
 {
-    public class StaticCtorItemStatusTextBlockCDpsDictionaryAutomationControl : StaticCtorItemStatusTextBlockAutomationControlBase
+    public class StaticCtorItemStatusTextBlockCDpsDictionaryTest : StaticCtorItemStatusTextBlockAutomationControlBase
     {
         public class StaticCtorItemStatusTextBlockCDpsDictionaryTextBlock : TextBlock
         {
@@ -27,14 +27,14 @@ namespace AutomationTest
             }
         }
         public const string AutomationIdentity = "StaticCtorItemStatusTextBlockCDpsDictionary";
-        public StaticCtorItemStatusTextBlockCDpsDictionaryAutomationControl() : base(AutomationIdentity)
+        public StaticCtorItemStatusTextBlockCDpsDictionaryTest() : base(AutomationIdentity)
         {
 
         }
 
         protected override bool DebugIsExpectedItemStatus(string itemStatus, bool isInitialItemStatus)
         {
-            var dictionary = ItemStatus.ItemStatusSerializer.Deserialize<Dictionary<string, object>>(itemStatus);
+            var dictionary = ItemStatus.Serializer.Deserialize<Dictionary<string, object>>(itemStatus);
             if (dictionary.Values.Count != 5)
             {
                 return false;

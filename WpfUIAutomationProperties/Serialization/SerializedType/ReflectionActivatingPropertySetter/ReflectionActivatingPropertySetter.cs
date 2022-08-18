@@ -17,17 +17,17 @@ namespace WpfUIAutomationProperties.Serialization
                 p => ReflectionActivatingPropertySetter<T>.CreateSetter(p)
             );
         }
-        public T ActivateAndSetProperties(IEnumerable<(string propertyName, object value)> propertyValues)
+        public T ActivateAndSetProperties(Dictionary<string, object> propertyValues)
         {
             var instance = (T)Activator.CreateInstance(typeof(T));
-            foreach (var (propertyName, value) in propertyValues)
+            foreach (var kvp in propertyValues)
             {
-                setValues[propertyName](instance, value);
+                setValues[kvp.Key](instance, kvp.Value);
             }
             return instance;
         }
 
-        object IReflectionActivatingPropertySetter.ActivateAndSetProperties(IEnumerable<(string propertyName, object value)> propertyValues)
+        object IReflectionActivatingPropertySetter.ActivateAndSetProperties(Dictionary<string, object> propertyValues)
         {
             return ActivateAndSetProperties(propertyValues);
         }

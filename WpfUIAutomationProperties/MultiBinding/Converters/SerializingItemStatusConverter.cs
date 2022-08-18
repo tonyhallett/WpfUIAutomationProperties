@@ -8,11 +8,11 @@ namespace WpfUIAutomationProperties.MultiBinding
 {
     internal class SerializingItemStatusConverter : IMultiValueConverter
     {
-        private readonly Func<IEnumerable<(string propertyName, object value)>, object> converter;
+        private readonly Func<Dictionary<string,object>, object> converter;
         private readonly Func<object, string> serializer;
 
         public SerializingItemStatusConverter(
-            Func<IEnumerable<(string propertyName, object value)>,object> converter,
+            Func<Dictionary<string,object>,object> converter,
             Func<object,string> serializer
         )
         {
@@ -21,7 +21,7 @@ namespace WpfUIAutomationProperties.MultiBinding
         }
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var namedStatuses = values.Select(v => ((string propertyName, object value))v);
+            var namedStatuses = values.Select(v => ((string propertyName, object value))v).ToDictionary(t => t.propertyName, t=> t.value);
             return serializer(converter(namedStatuses));
         }
 

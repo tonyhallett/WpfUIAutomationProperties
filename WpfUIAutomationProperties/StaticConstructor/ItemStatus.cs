@@ -8,7 +8,7 @@ namespace WpfUIAutomationProperties.StaticConstructor
 {
 	public static class ItemStatus
 	{
-		public static IItemStatusSerializer ItemStatusSerializer { get; set; } = new ItemStatusTypedDictionarySerializer();
+		public static IItemStatusSerializer Serializer { get; set; } = new ItemStatusTypedDictionarySerializer();
 
 		public static void ForType<TFrameworkElement>(
 			List<DependencyProperty> dependencyProperties,
@@ -25,37 +25,38 @@ namespace WpfUIAutomationProperties.StaticConstructor
 		}
 
 		public static void ForType<TFrameworkElement>(
-			List<IConvertDependencyProperty> dependencyPropertyItemStatusProviders,
+			List<IConvertDependencyProperty> convertDependencyProperties,
 			Func<Dictionary<string, object>, object> itemStatusesConverter = null,
 			Func<object, string> itemStatusSerializer = null
 		)
 		{
-			itemStatusSerializer = itemStatusSerializer ?? ItemStatusSerializer.Serialize;
-			var itemStatus = new SerializedConvertedDependencyPropertiesItemStatusSetter(
+			var itemStatusSetter = new SerializedConvertedDependencyPropertiesItemStatusSetter(
 				typeof(TFrameworkElement),
-                dependencyPropertyItemStatusProviders,
-                itemStatusSerializer,
-                itemStatusesConverter);
-			foreach (var dependencyPropertyItemStatusProvider in dependencyPropertyItemStatusProviders)
+                convertDependencyProperties,
+				itemStatusSerializer ?? Serializer.Serialize,
+                itemStatusesConverter
+			);
+
+			foreach (var convertDependencyProperty in convertDependencyProperties)
 			{
-				var dependencyProperty = dependencyPropertyItemStatusProvider.DependencyProperty;
+				var dependencyProperty = convertDependencyProperty.DependencyProperty;
 				dependencyProperty.OverrideMetadata(typeof(TFrameworkElement), new FrameworkPropertyMetadata((depObj, args) =>
 				{
-					itemStatus.PropertyChanged(dependencyPropertyItemStatusProvider, args.NewValue, depObj as FrameworkElement);
+					itemStatusSetter.PropertyChanged(convertDependencyProperty, args.NewValue, depObj as FrameworkElement);
 				}));
 			}
 		}
 
-		public static void ForType<TFrameworkElement, TSerialize>() where TSerialize : new()
+		public static void ForType<TFrameworkElement, TSerialize>(Func<object, string> itemStatusSerializer = null) 
+			where TSerialize : new()
         {
 			var convertDependencyProperties = MappedFrameworkElementPropertiesFactory.Get<TSerialize, TFrameworkElement>().ConvertDependencyProperties;
 			var reflectionActivatingPropertySetter = ReflectionActivatingPropertySetterFactory.Get<TSerialize>();
 
 			ForType<TFrameworkElement>(
 				convertDependencyProperties.ToList(),
-				namedItemStatuses => reflectionActivatingPropertySetter.ActivateAndSetProperties(
-					namedItemStatuses.Select(kvp => (kvp.Key, kvp.Value))
-				)
+				reflectionActivatingPropertySetter.ActivateAndSetProperties,
+				itemStatusSerializer
 			);
         }
     }

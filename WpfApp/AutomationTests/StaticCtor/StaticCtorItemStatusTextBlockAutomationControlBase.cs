@@ -2,7 +2,7 @@
 
 namespace AutomationTest
 {
-    public abstract class StaticCtorItemStatusTextBlockAutomationControlBase : TextBlockAutomationControl
+    public abstract class StaticCtorItemStatusTextBlockAutomationControlBase : TextBlockItemStatusTestBase
     {
         public StaticCtorItemStatusTextBlockAutomationControlBase(string automationId) : base(automationId) { }
         protected override void Setup()

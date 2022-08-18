@@ -19,8 +19,8 @@ namespace WpfUIAutomationProperties.StaticItemStatus
         public object Map(TFrameworkElement element)
         {
             return reflectionActivatingPropertySetter.ActivateAndSetProperties(
-                mappedFrameworkElementProperties.ConvertDependencyProperties.Select(
-                    cdp => (cdp.DependencyProperty.Name, cdp.Convert(element.GetValue(cdp.DependencyProperty)))
+                mappedFrameworkElementProperties.ConvertDependencyProperties.ToDictionary(
+                    cdp => cdp.DependencyProperty.Name,cdp => cdp.Convert(element.GetValue(cdp.DependencyProperty))
                 )
             );
         }
