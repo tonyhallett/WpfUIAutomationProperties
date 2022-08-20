@@ -1,4 +1,4 @@
-name: Push vsix artifact pull release and comment
+name: Test
 on: workflow_dispatch
     
 env:
