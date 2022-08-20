@@ -1,0 +1,33 @@
+name: Push vsix artifact pull release and comment
+on: workflow_dispatch
+    
+env:
+  CONFIGURATION: Release
+  SOLN_NAME: WpfUIAutomationProperties
+jobs:
+  test-job:
+    name: test job
+    runs-on: windows-2022
+    steps:
+      - name: create variables
+        shell: bash
+        run: |
+            echo "SOLN=${{env.SOLN_NAME}}.sln" >> $GITHUB_ENV
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: set up msbuild
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: set up VSTest
+        uses: darenm/Setup-VSTest@v1
+
+      - name: nuget restore
+        run: nuget restore ${{env.SOLN}}
+
+      - name: build 
+        run: |
+           msbuild ${{env.SOLN}} /p:Configuration=${{env.CONFIGURATION}} /p:DeployExtension=False /verbosity:minimal
+
+      - name: vs test solution
+        uses: tonyhallett/vstest-solution-action@v1.0.0
+

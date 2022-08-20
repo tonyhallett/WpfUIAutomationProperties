@@ -143,7 +143,7 @@ serialized types.  The generator is tested by **SourceGeneratorTest**.
 Just create a partial class / struct with attributes applied to ensure correct property names and types.
 
 
-[SerializedType(typeof(TextBlock),nameof(TextBlock.Background), nameof(TextBlock.Foreground)]
+[SerializedType(typeof(TextBlock),nameof(TextBlock.Background), nameof(TextBlock.Foreground))]
 public partial class SerializedTextBlock {
 
 }
@@ -166,12 +166,21 @@ public partial class SerializedTextBlock {
 
 There is also SerializedTypeAttachedAttribute and SerializedTypeAttachedTypedPropertyAttribute.
 
+To do *****
+When consuming the generator, SerializedTypeSourceGeneratorAttributes appears in Dependencies / Analyzers.
+See https://stackoverflow.com/questions/70500618/how-to-hide-a-local-dll-reference-in-analyzer-dependencies-and-only-have-just-an
+https://github.com/dotnet/roslyn/discussions/47517
+
+
+
 WPFUIAutomationProperties is tested by **AutomationTest** that tests **WpfApp**, a WPF app that uses WPFUIAutomationProperties.
 WpfApp exposes a set of tests and constants.  Each test sets up a TextBlock for ItemStatus with one of the three methods and has an AutomationIdentity 
 that is passed to the app from AutomationTest.  AutomationTest will find the element from the automation id, ask the test if the initial items status 
 is expected then change the test and ask if the changed item status is expected.
 Note that both WpfApp and AutomationTest are multi targeted to show that WPFUIAutomationProperties works for WPF .Net Framework and WPF .Net Core.
 Also tests are run for debug and release - only purpose is to show that it is possible to only set up for ItemStatus when in Debug mode.
+
+
 
 
 
