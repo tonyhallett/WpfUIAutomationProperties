@@ -28,6 +28,9 @@ jobs:
         run: |
            msbuild ${{env.SOLN}} /p:Configuration=${{env.CONFIGURATION}} /p:DeployExtension=False /verbosity:minimal
 
+      - name: install appium
+        run: npm install -g appium
+
       - name: vs test solution
         uses: tonyhallett/vstest-solution-action@v1.0.0
 
