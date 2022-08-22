@@ -25,9 +25,13 @@ jobs:
       - name: nuget restore
         run: nuget restore ${{env.SOLN}}
 
-      - name: build 
+      - name: build Release
         run: |
-           msbuild ${{env.SOLN}} /p:Configuration=${{env.CONFIGURATION}} /p:DeployExtension=False /verbosity:minimal
+           msbuild ${{env.SOLN}} /p:Configuration=Release /p:DeployExtension=False /verbosity:minimal
+
+      - name: build Debug
+        run: |
+           msbuild ${{env.SOLN}} /p:Configuration=Debug /p:DeployExtension=False /verbosity:minimal
 
       - name: install appium
         run: npm install -g appium
