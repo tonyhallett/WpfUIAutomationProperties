@@ -36,7 +36,6 @@ namespace AutomationTest
         public void Setup()
         {
             appiumProcess = Appium.Start();
-            Appium.StartWinAppDriver();
         }
 
         [TearDown]
