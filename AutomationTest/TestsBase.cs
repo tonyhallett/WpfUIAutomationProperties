@@ -101,18 +101,24 @@ namespace AutomationTest
             testItemStatus.IsDebug = isDebug;
             var element = windowsDriver.FindElement(MobileBy.AccessibilityId(automationId));
 
-            void AssertItemStatus(Func<string, bool> expectation)
+            void AssertItemStatus(Func<string, bool> expectation,bool isFirst)
             {
                 var itemStatus = element.GetAttribute("ItemStatus");
-                Assert.That(expectation(itemStatus), Is.True);
+                
+                Assert.That(expectation(itemStatus), Is.True, () =>
+                {
+                    var firstOrChange = isFirst ? "First" : "Change";
+                    var debugOrRelease = isDebug ? "Debug" : "Release";
+                    return $"Unexpected item status in {debugOrRelease} mode,  for {firstOrChange} : {itemStatus}";
+                });
             }
             
-            AssertItemStatus(testItemStatus.IsExpectedInitialItemStatus);
+            AssertItemStatus(testItemStatus.IsExpectedInitialItemStatus, true);
 
             var changeBtn = windowsDriver.FindElement(MobileBy.AccessibilityId(Constants.ChangeButtonAutomationId));
             changeBtn.Click();
 
-            AssertItemStatus(testItemStatus.IsExpectedChangedItemStatus);
+            AssertItemStatus(testItemStatus.IsExpectedChangedItemStatus, false);
         }
     }
 }
