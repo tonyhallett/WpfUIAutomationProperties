@@ -33,5 +33,4 @@ jobs:
         run: npm install -g appium
 
       - name: vs test solution
-        uses: tonyhallett/vstest-solution-action@v1.0.1
-
+        uses: tonyhallett/vstest-solution-action@v1.0.2
