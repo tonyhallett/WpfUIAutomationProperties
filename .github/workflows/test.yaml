@@ -10,9 +10,6 @@ jobs:
     name: test job
     runs-on: windows-2022
     steps:
-      - name: test check registry
-        run: REG QUERY HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock /s
-
       - name: create variables
         shell: bash
         run: |
