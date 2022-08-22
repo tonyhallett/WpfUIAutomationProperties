@@ -4,6 +4,7 @@ on: workflow_dispatch
 env:
   CONFIGURATION: Release
   SOLN_NAME: WpfUIAutomationProperties
+  ACTIONS_STEP_DEBUG: '${{ secrets.ACTIONS_STEP_DEBUG }}'
 jobs:
   test-job:
     name: test job
